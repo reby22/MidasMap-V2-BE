@@ -12,22 +12,22 @@ module.exports = {
       },
       id_estado: {
         type: Sequelize.INTEGER,
-        references: {
-          model: 'estado_instituciones',
-          key: "id_estado"
-        },
-        onDelete: "CASCADE",
-        onUpdate: "CASCADE"
+        //references: {
+        //  model: 'estado_instituciones',
+        //  key: "id_estado"
+        //},
+        //onDelete: "CASCADE",
+        //onUpdate: "CASCADE"
         
       },
       id_tipo: {
         type: Sequelize.INTEGER,
-        references: {
-          model: 'tipos_entidad',
-          key: "id_tipo"
-        },
-        onDelete: "CASCADE",
-        onUpdate: "CASCADE"
+        //references: {
+        //  model: 'tipos_entidad',
+        //  key: "id_tipo"
+        //},
+        //onDelete: "CASCADE",
+        //onUpdate: "CASCADE"
       
       },
       nombre: {

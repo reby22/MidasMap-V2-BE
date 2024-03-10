@@ -10,26 +10,13 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      usuarios.belongsTo(models.titulos,{
-        foreigWnKey: "id_titulo",
-        targetKey: "id_titulo"
-      }),
-      usuarios.belongsTo(models.licenciaturas,{
-        foreignKey: "id_licenciatura",
-        targetKey: "id_licenciatura"
-      }),
-      usuarios.belongsTo(models.grados,{
-        foreignKey: "id_grado",
-        targetKey: "id_grado"
-      }),
-      usuarios.belongsTo(models.roles,{
-        foreignKey: "id_rol",
-        targetKey: "id_rol"
-      }),
-      usuarios.belongsTo(models.entidades,{
-        foreignKey: "id_entidad",
-        targetKey: "id_entidad"
-      })
+      
+      usuarios.belongsTo(models.titulos, { foreignKey: 'id_titulo', targetKey: "id_titulo"});
+      usuarios.belongsTo(models.licenciaturas, { foreignKey: 'id_licenciatura',targetKey: "id_licenciatura" });
+      usuarios.belongsTo(models.entidades, { foreignKey: 'id_entidad', targetKey: "id_entidad" });
+      usuarios.belongsTo(models.grados, { foreignKey: 'id_grado', targetKey: "id_grado"});
+      usuarios.belongsTo(models.roles, { foreignKey: 'id_rol', targetKey: "id_rol"});
+
     }
   }
   usuarios.init({

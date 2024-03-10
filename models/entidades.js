@@ -11,17 +11,18 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      entidades.hasMany(models.usuarios, {
+        foreignKey: "id_entidad",
+        sourceKey: 'id_entidad'
+      });
       entidades.belongsTo(models.tipos_entidad, {
         foreignKey: "id_tipo",
         targetKey: "id_tipo"
-      }),
+      });
       entidades.belongsTo(models.estado_instituciones, {
         foreignKey: "id_estado",
         targetKey: "id_estado"
-      }),
-      entidades.hasMany(models.usuarios, {
-        foreignKey: "id_institucion"
-      })
+      });
       
     }
   }

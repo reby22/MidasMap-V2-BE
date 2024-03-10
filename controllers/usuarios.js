@@ -1,10 +1,10 @@
 const Sequelize     = require('sequelize');
-const usuario       = require('../models').usuario;
+const usuario       = require('../models').usuarios;
 const { res, req} = require("express");
 
-module.exports = {
 
- create(req, res) {
+
+const createUser = (req= req, res=res) => {
     return usuario
         .create ({
              id_usuario: req.params.id_usuario,
@@ -22,13 +22,13 @@ module.exports = {
         })
         .then(usuario => res.status(200).send(usuario))
         .catch(error => res.status(400).send(error))
- },
- list(_, res) {
+ }
+ const listUser = (req= req, res=res) => {
      return usuario.findAll({})
         .then(usuario => res.status(200).send(usuario))
         .catch(error => res.status(400).send(error))
- },
- find (req, res) {
+ }
+ const findUser = (req= req, res=res) =>{
      return usuario.findAll({
          where: {
              username: req.params.username,
@@ -37,6 +37,11 @@ module.exports = {
      .then(usuario => res.status(200).send(usuario))
      .catch(error => res.status(400).send(error))
   }
+
+  module.exports = {
+    createUser,
+    listUser,
+    findUser
 };
  
 
