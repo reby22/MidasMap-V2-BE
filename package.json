@@ -1,0 +1,30 @@
+{
+  "name": "express",
+  "version": "1.0.0",
+  "description": "MIDASmap V2 Server",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reby22/MIDASmap-V2.git"
+  },
+  "author": "Team MIDASmap V2",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/reby22/MIDASmap-V2/issues"
+  },
+  "homepage": "https://github.com/reby22/MIDASmap-V2#readme",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "express": "^4.18.3",
+    "morgan": "^1.10.0",
+    "mysql2": "^3.9.2",
+    "sequelize": "^6.37.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
