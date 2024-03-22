@@ -11,11 +11,11 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      usuario.belongsTo(models.titulo, { foreignKey: 'id_titulo', targetKey: "id_titulo"});
-      usuario.belongsTo(models.licenciatura, { foreignKey: 'id_licenciatura',targetKey: "id_licenciatura" });
-      usuario.belongsTo(models.entidad, { foreignKey: 'id_entidad', targetKey: "id_entidad" });
-      usuario.belongsTo(models.grado, { foreignKey: 'id_grado', targetKey: "id_grado"});
-      usuario.belongsTo(models.rol, { foreignKey: 'id_rol', targetKey: "id_rol"});
+      //usuario.belongsTo(models.titulo, { foreignKey: 'id_titulo', targetKey: "id_titulo"});
+      //usuario.belongsTo(models.licenciatura, { foreignKey: 'id_licenciatura',targetKey: "id_licenciatura" });
+      //usuario.belongsTo(models.entidad, { foreignKey: 'id_entidad', targetKey: "id_entidad" });
+      //usuario.belongsTo(models.grado, { foreignKey: 'id_grado', targetKey: "id_grado"});
+      //usuario.belongsTo(models.rol, { foreignKey: 'id_rol', targetKey: "id_rol"});
     }
   }
   usuario.init({

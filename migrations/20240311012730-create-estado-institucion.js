@@ -4,13 +4,12 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('estado_institucions', {
       id:{
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
         type: Sequelize.BIGINT
       },
       id_estado: {
         allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
         type: Sequelize.BIGINT
       },
       estado: {

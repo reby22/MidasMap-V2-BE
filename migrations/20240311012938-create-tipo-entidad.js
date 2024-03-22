@@ -4,13 +4,12 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('tipo_entidads', {
       id:{
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
         type: Sequelize.BIGINT
       },
       id_tipo: {
         allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
         type: Sequelize.BIGINT
       },
       tipo: {
