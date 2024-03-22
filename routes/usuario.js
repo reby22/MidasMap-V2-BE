@@ -1,15 +1,17 @@
 const Router = require("express");
-const { createUser} = require("../controllers/usuario");
+const { createUser, updateUser, deleteUser, getUserById} = require("../controllers/usuario");
 const router = Router();
 
 module.exports = router;
 
-//router.get("/", )
+// Ruta para crear un nuevo usuario
+router.post('/', createUser);
 
-router.post("/", createUser)
+// Ruta para actualizar un usuario existente
+router.put('/:id', updateUser);
 
-//router.delete("/:id", usersDelete)
+// Ruta para eliminar un usuario
+router.delete('/:id', deleteUser);
 
-//router.put("/:id", usersPut)
-
-//router.patch("/", usersPatch)
+// Ruta para obtener un usuario por su ID
+router.get('/:id', getUserById);

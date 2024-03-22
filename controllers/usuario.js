@@ -44,24 +44,47 @@ const createUser = async (req, res) => {
   };
 
 
- const listUser = (req= req, res=res) => {
-     return usuario.findAll({})
-        .then(usuario => res.status(200).send(usuario))
-        .catch(error => res.status(400).send(error))
- }
- const findUser = (req= req, res=res) =>{
-     return usuario.findAll({
-         where: {
-             username: req.params.username,
-         }
-     })
-     .then(usuario => res.status(200).send(usuario))
-     .catch(error => res.status(400).send(error))
-  }
+  const updateUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updatedUser = await Usuario.findByIdAndUpdate(id, req.body, { new: true });
+        res.status(200).json({ usuario: updatedUser });
+    } catch (error) {
+        console.error('Error al actualizar el usuario:', error);
+        res.status(500).json({ mensaje: 'Error interno del servidor' });
+    }
+};
 
-  module.exports = {
+const deleteUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        await Usuario.findByIdAndDelete(id);
+        res.status(200).json({ mensaje: 'Usuario eliminado correctamente' });
+    } catch (error) {
+        console.error('Error al eliminar el usuario:', error);
+        res.status(500).json({ mensaje: 'Error interno del servidor' });
+    }
+};
+
+const getUserById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const usuario = await Usuario.findById(id);
+        if (!usuario) {
+            res.status(404).json({ mensaje: 'Usuario no encontrado' });
+            return;
+        }
+        res.status(200).json({ usuario });
+    } catch (error) {
+        console.error('Error al obtener el usuario:', error);
+        res.status(500).json({ mensaje: 'Error interno del servidor' });
+    }
+};
+
+module.exports = {
     createUser,
-    listUser,
-    findUser
+    updateUser,
+    deleteUser,
+    getUserById
 };
  
