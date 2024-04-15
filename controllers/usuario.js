@@ -1,4 +1,4 @@
-//const Usuario = require('./models/associations').Usuario;
+const {Usuario} = require('../models/associations');
 
 const createUser = async (req, res) => {
     try {
