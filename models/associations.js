@@ -47,28 +47,7 @@ const Estado_institucion = sequelize.define(
     },
   );
 
-  const Tipo_entidad = sequelize.define(
-    'Tipo_entidad',
-    {
-      // Model attributes are defined here
-      id_tipo: {
-        type: DataTypes.BIGINT,
-        allowNull: false,
-        primaryKey: true,
-        autoIncrement: true,
-      },
-      tipo: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        // allowNull defaults to true
-      },
-    },
-    {
-      // Other model options go here
-      tableName: 'tipo_entidades',
-      timestamps: false
-    },
-  );
+
 
 const Titulo = sequelize.define(
     'Titulo',
@@ -549,11 +528,9 @@ const Licenciatura = sequelize.define(
 
   
 
-  Tipo_entidad.hasOne(Entidad, {foreignKey:'id_tipo', onDelete: 'CASCADE', onUpdate: 'CASCADE'});
   Estado_institucion.hasOne(Entidad, {foreignKey:'id_estado', onDelete: 'CASCADE', onUpdate: 'CASCADE'});
   Localidad.hasOne(Entidad,{foreignKey:'id_localidad', onDelete: 'CASCADE', onUpdate: 'CASCADE'});
   Entidad.belongsTo(Localidad,{foreignKey:'id_localidad'});
-  Entidad.belongsTo(Tipo_entidad, {foreignKey: 'id_tipo'});
   Entidad.belongsTo(Estado_institucion, {foreignKey: 'id_estado'});
   Titulo.hasOne(Usuario,{foreignKey:'id_titulo', onDelete: 'CASCADE', onUpdate: 'CASCADE'});
   Licenciatura.hasOne(Usuario,{foreignKey:'id_licenciatura', onDelete: 'CASCADE', onUpdate: 'CASCADE'});
@@ -597,4 +574,4 @@ const Licenciatura = sequelize.define(
     console.log(error);
   })
 
-  module.exports = {Entidad, Tipo_entidad, Estado_institucion, Titulo, Licenciatura, Grado, Rol, Usuario}
+  module.exports = {Entidad, Estado_institucion, Titulo, Licenciatura, Grado, Rol, Usuario,Localidad,Reporte, BSL, Enfermedad, Agente_Causal, Control_usuario, Alerta, Tipo_Alerta, Riesgo}

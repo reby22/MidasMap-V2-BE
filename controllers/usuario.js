@@ -3,15 +3,15 @@ const {Usuario} = require('../models/associations');
 const createUser = async (req, res) => {
     try {
       // Extraer la información del cuerpo de la solicitud
-      const { nombre, ap_paterno, ap_materno, telefono_fijo, telefono_celular, correo, contraseña, id_titulo, id_licenciatura, especialidad, sub_especializacion, ultima_cedula_dgp, id_entidad, id_grado, fecha_nacimiento, fecha_registro, id_rol } = req.body;
+      const { nombre, ap_paterno, ap_materno, telefono_fijo, telefono_celular, correo, contraseña, id_titulo, id_licenciatura, especialidad, sub_especializacion, ultima_cedula_dgp, id_entidad, id_grado, fecha_nacimiento, id_rol } = req.body;
 
-      if(!nombre || !ap_paterno || !ap_materno || !telefono_fijo || !telefono_celular || !correo || !contraseña || !id_titulo || !id_licenciatura || !especialidad || !sub_especializacion || !ultima_cedula_dgp || !id_entidad || !id_grado || !fecha_nacimiento || !fecha_registro || !id_rol){
+      if(!nombre || !ap_paterno || !ap_materno || !telefono_fijo || !telefono_celular || !correo || !contraseña || !id_titulo || !id_licenciatura || !especialidad || !sub_especializacion || !ultima_cedula_dgp || !id_entidad || !id_grado || !fecha_nacimiento || !id_rol){
         res.status(400).json({
             msg :  "Datos invalidos"
         });
         return;
     }
-        console.log("HOLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+    
       // Crear el usuario en la base de datos
       const nuevoUsuario = await Usuario.create({
         nombre,
