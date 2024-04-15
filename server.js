@@ -25,7 +25,9 @@ class Server {
         this.estadoPath = "/api/estados";
         this.localidadPath = "/api/localidades";
         this.entidadPath = "/api/entidades";
-
+        this.bslPath = "/api/bsl";
+        this.agente_causalPath = "/api/agenteCausal";
+        this.reportePath = "/api/reportes";
         
         dbConnection();
         this.middlewares();
@@ -37,6 +39,9 @@ class Server {
         this.app.use(this.estadoPath, require("./routes/estado_institucion"));
         this.app.use(this.localidadPath, require("./routes/localidad"));
         this.app.use(this.entidadPath, require("./routes/entidad"));
+        this.app.use(this.bslPath, require("./routes/bsl"));
+        this.app.use(this.agente_causalPath, require("./routes/agente_causal"));
+        this.app.use(this.reportePath, require("./routes/reporte"));
 
         this.app.get("*", (req, res) => {
             res.status(404).send("Error - ruta no encontrada");
