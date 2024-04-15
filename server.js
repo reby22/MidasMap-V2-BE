@@ -5,6 +5,8 @@ var bodyParser = require('body-parser')
 const express = require("express");
 const cors = require("cors"); 
 var env = require('dotenv'); 
+const {dbConnection} = require('./config/dbConnection');
+const {Estado_institucion, Tipo_entidad, Entidad, Titulo, Licenciatura, Grado, Rol, Usuario} = require('./models/associations');
 
 
 class Server {
@@ -20,8 +22,9 @@ class Server {
         
 
         this.usersPath = "/api/usuarios";
- 
-        this.db();
+
+        
+        dbConnection();
         this.middlewares();
         this.routes();
     }
@@ -41,16 +44,7 @@ class Server {
         this.app.use(passport.initialize());
         this.app.use(passport.session());
     }
-    db(){
-        //Models 
-        var models = require("./models");
-        //Sync Database 
-        models.sequelize.sync().then(function() {
-            console.log('Nice! Database looks fine')
-        }).catch(function(err) {
-            console.log(err, "Something went wrong with the Database Update!")
-        });
-    }
+
 
     listen(){
         this.app.listen(this.port, ()=>{
