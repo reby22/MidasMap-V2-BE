@@ -24,12 +24,11 @@ const createUser = async (req, res) => {
         id_titulo ,
         id_licenciatura,
         especialidad,
-        sub_especializacion,
+        sub_especialidad,
         ultima_cedula_dgp,
         id_entidad,
         id_grado,
         fecha_nacimiento,
-        fecha_registro,
         id_rol
       });
   

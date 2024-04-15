@@ -24,6 +24,29 @@ const Estado_institucion = sequelize.define(
     },
   );
 
+  const Localidad = sequelize.define(
+    'Localidad',
+    {
+      // Model attributes are defined here
+      id_localidad: {
+        type: DataTypes.BIGINT,
+        allowNull: false,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      localidad: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        // allowNull defaults to true
+      },
+    },
+    {
+      // Other model options go here
+      tableName: 'localidades',
+      timestamps: false
+    },
+  );
+
   const Tipo_entidad = sequelize.define(
     'Tipo_entidad',
     {
@@ -183,6 +206,26 @@ const Licenciatura = sequelize.define(
         // allowNull defaults to true
       },
       ap_materno: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        // allowNull defaults to true
+      },
+      correo: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        // allowNull defaults to true
+      },
+      contraseña: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        // allowNull defaults to true
+      },
+      telefono_fijo: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        // allowNull defaults to true
+      },
+      telefono_celular: {
         type: DataTypes.STRING,
         allowNull: false,
         // allowNull defaults to true
@@ -508,6 +551,8 @@ const Licenciatura = sequelize.define(
 
   Tipo_entidad.hasOne(Entidad, {foreignKey:'id_tipo', onDelete: 'CASCADE', onUpdate: 'CASCADE'});
   Estado_institucion.hasOne(Entidad, {foreignKey:'id_estado', onDelete: 'CASCADE', onUpdate: 'CASCADE'});
+  Localidad.hasOne(Entidad,{foreignKey:'id_localidad', onDelete: 'CASCADE', onUpdate: 'CASCADE'});
+  Entidad.belongsTo(Localidad,{foreignKey:'id_localidad'});
   Entidad.belongsTo(Tipo_entidad, {foreignKey: 'id_tipo'});
   Entidad.belongsTo(Estado_institucion, {foreignKey: 'id_estado'});
   Titulo.hasOne(Usuario,{foreignKey:'id_titulo', onDelete: 'CASCADE', onUpdate: 'CASCADE'});
