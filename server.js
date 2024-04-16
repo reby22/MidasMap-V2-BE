@@ -28,7 +28,16 @@ class Server {
         this.bslPath = "/api/bsl";
         this.agente_causalPath = "/api/agenteCausal";
         this.reportePath = "/api/reportes";
-        
+        this.tipo_alertaPath = "/api/tipoAlertas";
+        this.riesgoPath = "/api/riesgos";
+        this.alertaPath = "/api/alertas";
+        this.rolPath = "/api/roles";
+        this.gradoPath = "/api/grados";
+        this.licenciaturaPath = "/api/licenciaturas";
+        this.tituloPath = "/api/titulos";
+
+
+
         dbConnection();
         this.middlewares();
         this.routes();
@@ -42,6 +51,13 @@ class Server {
         this.app.use(this.bslPath, require("./routes/bsl"));
         this.app.use(this.agente_causalPath, require("./routes/agente_causal"));
         this.app.use(this.reportePath, require("./routes/reporte"));
+        this.app.use(this.tipo_alertaPath, require("./routes/tipo_alerta"));
+        this.app.use(this.riesgoPath, require("./routes/riesgo"));
+        this.app.use(this.alertaPath, require("./routes/alerta"));
+        this.app.use(this.rolPath, require("./routes/rol"));
+        this.app.use(this.gradoPath, require("./routes/grado"));
+        this.app.use(this.licenciaturaPath, require("./routes/licenciatura"));
+        this.app.use(this.tituloPath, require("./routes/titulo"));
 
         this.app.get("*", (req, res) => {
             res.status(404).send("Error - ruta no encontrada");

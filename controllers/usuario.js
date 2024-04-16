@@ -40,7 +40,7 @@ const createUser = async (req, res) => {
       res.status(500).json({ mensaje: 'Error interno del servidor' });
     }
   };
-
+/*
 
   const updateUser = async (req, res) => {
     try {
@@ -63,11 +63,11 @@ const deleteUser = async (req, res) => {
         res.status(500).json({ mensaje: 'Error interno del servidor' });
     }
 };
-
+*/
 const getUserById = async (req, res) => {
     try {
         const { id } = req.params;
-        const usuario = await Usuario.findById(id);
+        const usuario = await Usuario.findByPk(id);
         if (!usuario) {
             res.status(404).json({ mensaje: 'Usuario no encontrado' });
             return;
@@ -81,8 +81,6 @@ const getUserById = async (req, res) => {
 
 module.exports = {
     createUser,
-    updateUser,
-    deleteUser,
     getUserById
 };
  
