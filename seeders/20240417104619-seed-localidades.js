@@ -9,7 +9,7 @@ module.exports = {
     for (let i = 0; i < 30; i++) {
       localidadesData.push({
         id_localidad: i + 1,
-        id_estado: Math.floor(Math.random() * 10) + 1,
+        id_estado: Math.floor(Math.random() * 32) + 1,
         localidad: faker.address.city(),
       });
     }

@@ -6,6 +6,7 @@ module.exports = {
 
     for (let i = 2; i <= 21; i++) {
       data.push({
+        id_control_usuario: i-1,
         id_usuario: i,
         id_administrador: 1,
         id_rol: 2,

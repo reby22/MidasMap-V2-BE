@@ -277,7 +277,7 @@ const Tipo_Alerta = sequelize.define(
   },
   {
     // Other model options go here
-    tableName: 'tipo_alertas',
+    tableName: 'tipos_alerta',
     timestamps: false
   },
 );
@@ -344,7 +344,7 @@ const Control_usuario = sequelize.define(
   'Control_usuario',
   {
     // Model attributes are defined here
-    id_control_usuarios: {
+    id_control_usuario: {
       type: DataTypes.BIGINT,
       allowNull: false,
       primaryKey: true,
@@ -412,32 +412,14 @@ const Agente_Causal = sequelize.define(
       autoIncrement: true,
     },
     agente: {
-      type: DataTypes.STRING(40),
+      // type: DataTypes.STRING(40),
+      type: DataTypes.STRING(150),
       allowNull: false,
     },
   },
   {
     // Other model options go here
     tableName: 'agentes_causales',
-    timestamps: false
-  },
-);
-
-
-const Info_Enfermedad = sequelize.define(
-  'Info_Enfermedad',
-  {
-    // Model attributes are defined here
-    id_info_enfermedad: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
-      primaryKey: true,
-      autoIncrement: true,
-    },
-  },
-  {
-    // Other model options go here
-    tableName: 'info_enfermedades',
     timestamps: false
   },
 );
@@ -569,37 +551,37 @@ const Reporte = sequelize.define(
       // allowNull defaults to true
     },
     numero_casos_sospechosos: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.INTEGER,
       allowNull: false,
       // allowNull defaults to true
     },
     numero_casos_probables: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.INTEGER,
       allowNull: false,
       // allowNull defaults to true
     },
     numero_casos_confirmados: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.INTEGER,
       allowNull: false,
       // allowNull defaults to true
     },
     numero_casos_totales: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.INTEGER,
       allowNull: false,
       // allowNull defaults to true
     },
     numero_casos_hospitalizados: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.INTEGER,
       allowNull: false,
       // allowNull defaults to true
     },
     numero_muertos: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.INTEGER,
       allowNull: false,
       // allowNull defaults to true
     },
-    uci: {
-      type: DataTypes.BIGINT,
+    numero_casos_uci: {
+      type: DataTypes.INTEGER,
       allowNull: false,
       // allowNull defaults to true
     },
@@ -625,10 +607,9 @@ Alerta.belongsTo(Riesgo, { foreignKey: 'id_riesgo' });
 Alerta.belongsTo(Usuario, { foreignKey: 'id_usuario' });
 Control_usuario.belongsTo(Usuario, { foreignKey: 'id_usuario' });
 Control_usuario.belongsTo(Rol, { foreignKey: 'id_rol' });
-Info_Enfermedad.belongsTo(BSL, { foreignKey: 'id_bsl' });
-Info_Enfermedad.belongsTo(Tipo_Enfermedad, { foreignKey: 'id_enfermedad' });
-Info_Enfermedad.belongsTo(Agente_Causal, { foreignKey: 'id_agente' });
-Reporte.belongsTo(Info_Enfermedad, { foreignKey: 'id_info_enfermedad' });
+Agente_Causal.belongsTo(BSL, { foreignKey: 'id_bsl' });
+Agente_Causal.belongsTo(Tipo_Enfermedad, { foreignKey: 'id_enfermedad' });
+Reporte.belongsTo(Agente_Causal, { foreignKey: 'id_agente_causal' });
 Reporte.belongsTo(Distribucion_Sexo, { foreignKey: 'id_distribucion_sexo' });
 Reporte.belongsTo(Modo_Transmision, { foreignKey: 'id_modo_transmision' });
 Reporte.belongsTo(Usuario, { foreignKey: 'id_usuario' });
@@ -650,9 +631,8 @@ Riesgo.hasOne(Alerta, { foreignKey: 'id_riesgo', onDelete: 'CASCADE', onUpdate: 
 Usuario.hasMany(Alerta, { foreignKey: 'id_usuario', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 Usuario.hasMany(Control_usuario, { foreignKey: 'id_administrador' });
 Rol.hasOne(Control_usuario, { foreignKey: 'id_rol', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-BSL.hasOne(Info_Enfermedad, { foreignKey: 'id_bsl', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Tipo_Enfermedad.hasOne(Info_Enfermedad, { foreignKey: 'id_tipo_enfermedad', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Agente_Causal.hasOne(Info_Enfermedad, { foreignKey: 'id_agente', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+BSL.hasOne(Agente_Causal, { foreignKey: 'id_bsl', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Tipo_Enfermedad.hasOne(Agente_Causal, { foreignKey: 'id_tipo_enfermedad', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 Usuario.hasMany(Reporte, { foreignKey: 'id_usuario', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 Entidad.hasMany(Reporte, { foreignKey: 'id_institucion_casos', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 Entidad.hasMany(Reporte, { foreignKey: 'id_laboratorio', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
@@ -668,4 +648,4 @@ sequelize.sync({ alter: true }).then(() => {
   console.log(error);
 })
 
-module.exports = { Entidad, Estado, Tipo_Entidad, Titulo, Licenciatura, Grado, Rol, Usuario, Localidad, Reporte, BSL, Tipo_Enfermedad, Agente_Causal, Info_Enfermedad, Modo_Transmision, Medida_Tiempo,Distribucion_Sexo, Control_usuario, Alerta, Tipo_Alerta, Riesgo }
+module.exports = { Entidad, Estado, Tipo_Entidad, Titulo, Licenciatura, Grado, Rol, Usuario, Localidad, Reporte, BSL, Tipo_Enfermedad, Agente_Causal, Modo_Transmision, Medida_Tiempo,Distribucion_Sexo, Control_usuario, Alerta, Tipo_Alerta, Riesgo }

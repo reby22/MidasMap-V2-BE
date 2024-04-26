@@ -13,10 +13,10 @@ module.exports = {
       });
     }
 
-    await queryInterface.bulkInsert('tipo_alertas', data);
+    await queryInterface.bulkInsert('tipos_alerta', data);
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.bulkDelete('tipo_alertas', null, {});
+    await queryInterface.bulkDelete('tipos_alerta', null, {});
   }
 };
