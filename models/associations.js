@@ -643,7 +643,7 @@ Entidad.hasMany(Reporte, { foreignKey: 'id_laboratorio', onDelete: 'CASCADE', on
 
 
 sequelize.sync({ alter: true }).then(() => {
-  //funciona
+  console.log("DB creada, Todo funciona Bien")
 }).catch((error) => {
   console.log(error);
 })
