@@ -69,7 +69,7 @@ const getUserById = async (req, res) => {
         const { id } = req.params;
         const usuario = await Usuario.findByPk(id);
         if (!usuario) {
-            res.status(404).json({ mensaje: 'Usuario no encontrado' });
+            res.status(404).json({ mensaje: 'Usuario no encontrado3' });
             return;
         }
         res.status(200).json({ usuario });
@@ -79,8 +79,34 @@ const getUserById = async (req, res) => {
     }
 };
 
+
+const login = async (req, res) => {
+    try {
+        const { correo, contraseña } = req.body;
+        console.log(req.body);
+        const usuario = await Usuario.findOne({ where: { correo: correo } });
+        if (!usuario) {
+            res.status(404).json({ mensaje: 'Usuario no encontrado2' });
+            return;
+        }
+
+        const contraseñaValida = contraseña === usuario.contraseña;
+
+        if (!contraseñaValida) {
+            res.status(401).json({ mensaje: 'Contraseña incorrecta' });
+            return;
+        }
+
+        res.status(200).json({ mensaje: 'Inicio de sesión exitoso', usuario });
+    } catch (error) {
+        console.error('Error al obtener el usuario:', error);
+        res.status(500).json({ mensaje: 'Error interno del servidor' });
+    }
+};
+
 module.exports = {
     createUser,
-    getUserById
+    getUserById,
+    login
 };
  
