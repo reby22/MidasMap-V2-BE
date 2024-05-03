@@ -1,11 +1,28 @@
-const {Usuario} = require('../models/associations');
+const {Usuario, Localidad} = require('../models/associations');
+
+
 
 const createUser = async (req, res) => {
     try {
       // Extraer la información del cuerpo de la solicitud
-      const { nombre, ap_paterno, ap_materno, telefono_fijo, telefono_celular, correo, contraseña, id_titulo, id_licenciatura, especialidad, sub_especializacion, ultima_cedula_dgp, id_entidad, id_grado, fecha_nacimiento, id_rol } = req.body;
+      const { nombre,
+        ap_paterno,
+        ap_materno,
+        correo,
+        contraseña,
+        telefono_fijo,
+        telefono_celular,
+        especialidad,
+        sub_especialidad,
+        ultima_cedula_dgp,
+        fecha_nacimiento,
+        id_titulo ,
+        id_licenciatura,
+        id_entidad,
+        id_grado,
+        id_rol } = req.body;
 
-      if(!nombre || !ap_paterno || !ap_materno || !telefono_fijo || !telefono_celular || !correo || !contraseña || !id_titulo || !id_licenciatura || !especialidad || !sub_especializacion || !ultima_cedula_dgp || !id_entidad || !id_grado || !fecha_nacimiento || !id_rol){
+      if(!nombre || !ap_paterno || !ap_materno || !telefono_fijo || !telefono_celular || !correo || !contraseña || !id_titulo || !id_licenciatura || !especialidad || !sub_especialidad || !ultima_cedula_dgp || !id_entidad || !id_grado || !fecha_nacimiento || !id_rol){
         res.status(400).json({
             msg :  "Datos invalidos"
         });
@@ -17,18 +34,18 @@ const createUser = async (req, res) => {
         nombre,
         ap_paterno,
         ap_materno,
-        telefono_fijo,
-        telefono_celular,
         correo,
         contraseña,
-        id_titulo ,
-        id_licenciatura,
+        telefono_fijo,
+        telefono_celular,
         especialidad,
         sub_especialidad,
         ultima_cedula_dgp,
+        fecha_nacimiento,
+        id_titulo ,
+        id_licenciatura,
         id_entidad,
         id_grado,
-        fecha_nacimiento,
         id_rol
       });
   
@@ -90,16 +107,60 @@ const login = async (req, res) => {
             return;
         }
 
+
         const contraseñaValida = contraseña === usuario.contraseña;
 
         if (!contraseñaValida) {
             res.status(401).json({ mensaje: 'Contraseña incorrecta' });
             return;
         }
+        const nuevo = {
+            id_usuario: String(usuario.id_usuario),
+            nombre: usuario.nombre,
+            ap_paterno: usuario.ap_paterno,
+            ap_materno: usuario.ap_materno,
+            telefono_fijo: usuario.telefono_fijo,
+            telefono_celular: usuario.telefono_celular,
+            correo: usuario.correo,
+            contraseña: usuario.contraseña,
+            titulo: String(usuario.id_titulo),
+            licenciatura: String(usuario.id_licenciatura),
+            especialidad: usuario.especialidad,
+            sub_especialidad: usuario.sub_especialidad,
+            ultima_cedula_dgp: usuario.ultima_cedula_dgp,
+            grado: String(usuario.id_grado),
+            entidad: String(usuario.id_entidad),
+            estado: "Prueba",
+            localidad: "Prueba",
+            fecha_nacimiento: usuario.fecha_nacimiento,
+            fecha_registro: "1987-09-03T19:33:06.000Z",
+            id_rol: String(usuario.id_rol),            
+        }
 
-        res.status(200).json({ mensaje: 'Inicio de sesión exitoso', usuario });
+        res.status(200).json( nuevo );
     } catch (error) {
         console.error('Error al obtener el usuario:', error);
+        res.status(500).json({ mensaje: 'Error interno del servidor' });
+    }
+};
+
+const orderBy = async (req, res) => {
+    try {
+        // Obtenemos todos los usuarios ordenados por su nombre
+        const usuariosOrdenados = await Usuario.findAll({
+            order: [['nombre', 'ASC']]
+        });
+
+        // Verificamos si se encontraron usuarios
+        if (usuariosOrdenados.length === 0) {
+            res.status(404).json({ mensaje: 'No se encontraron usuarios' });
+            return;
+        }
+
+        // Enviamos la lista de usuarios ordenados en la respuesta
+        res.status(200).json({ usuarios: usuariosOrdenados });
+    } catch (error) {
+        console.error('Error al obtener los usuarios:', error);
         res.status(500).json({ mensaje: 'Error interno del servidor' });
     }
 };
@@ -107,6 +168,7 @@ const login = async (req, res) => {
 module.exports = {
     createUser,
     getUserById,
-    login
+    login,
+    orderBy
 };
  

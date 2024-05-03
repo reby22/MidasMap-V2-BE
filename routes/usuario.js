@@ -1,5 +1,5 @@
 const Router = require("express");
-const { createUser, getUserById, login} = require("../controllers/usuario");
+const { createUser, getUserById, login, orderBy} = require("../controllers/usuario");
 const router = Router();
 
 module.exports = router;
@@ -15,4 +15,5 @@ router.post('/', createUser);
 
 // Ruta para obtener un usuario por su ID
 router.get('/buscar/:id', getUserById);
-router.get('/login',login);
+router.post('/login',login);
+router.get('/orderBy',orderBy);
