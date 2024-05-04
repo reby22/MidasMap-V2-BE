@@ -47,9 +47,8 @@ module.exports = {
         id_entidad: Math.floor(Math.random() * 20) + 1,
         id_grado: Math.floor(Math.random() * 6) + 1,
         fecha_nacimiento: faker.date.past(30, new Date('2000-01-01')),
-        id_rol: 3,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        fecha_registro: faker.date.past(30, new Date()),
+        id_rol: 3
       });
     }
 
@@ -70,9 +69,8 @@ module.exports = {
       id_entidad: Math.floor(Math.random() * 20) + 1,
       id_grado: Math.floor(Math.random() * 6) + 1,
       fecha_nacimiento: faker.date.past(30, new Date('2000-01-01')),
+      fecha_registro: faker.date.past(30, new Date()),
       id_rol: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
     });
 
     await queryInterface.bulkInsert('usuarios', data);
