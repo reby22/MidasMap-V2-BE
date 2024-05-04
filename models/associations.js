@@ -251,11 +251,16 @@ const Usuario = sequelize.define(
       allowNull: false,
       // allowNull defaults to true
     },
+    fecha_registro: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      // allowNull defaults to true
+    },
   },
   {
     // Other model options go here
     tableName: 'usuarios',
-    timestamps: true,
+    timestamps: false,
   },
 );
 
@@ -616,13 +621,15 @@ Reporte.belongsTo(Usuario, { foreignKey: 'id_usuario' });
 Reporte.belongsTo(Medida_Tiempo, { foreignKey: 'id_medida_dpi' });
 Reporte.belongsTo(Medida_Tiempo, { foreignKey: 'id_medida_dpe' });
 Reporte.belongsTo(Entidad, { foreignKey: 'id_institucion_casos' });
-Reporte.belongsTo(Entidad, { foreignKey: 'id_laboratorio' });
+Reporte.belongsTo(Entidad, { foreignKey: 'id_laboratorio'});
+Localidad.belongsTo(Estado, { foreignKey: 'id_estado'});
 
-Estado.hasOne(Entidad, { foreignKey: 'id_estado', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+
 Localidad.hasOne(Entidad, { foreignKey: 'id_localidad', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Tipo_Entidad.hasOne(Entidad, { foreignKey: 'id_tipo', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Estado.hasOne(Localidad, { foreignKey: 'id_estado', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 Titulo.hasOne(Usuario, { foreignKey: 'id_titulo', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 Licenciatura.hasOne(Usuario, { foreignKey: 'id_licenciatura', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Localidad.belongsTo(Estado, { foreignKey: 'id_estado' });
 Grado.hasOne(Usuario, { foreignKey: 'id_grado', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 Rol.hasOne(Usuario, { foreignKey: 'id_rol', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 Entidad.hasOne(Usuario, { foreignKey: 'id_entidad', onDelete: 'CASCADE', onUpdate: 'CASCADE' });

@@ -129,8 +129,8 @@ const login = async (req, res) => {
             sub_especialidad: usuario.sub_especialidad,
             ultima_cedula_dgp: usuario.ultima_cedula_dgp,
             grado: String(usuario.id_grado),
-            entidad: String(usuario.id_entidad),
-            estado: "Prueba",
+            entidad: req.entidad.nombre,
+            estado: "Prueba",  
             localidad: "Prueba",
             fecha_nacimiento: usuario.fecha_nacimiento,
             fecha_registro: "1987-09-03T19:33:06.000Z",
@@ -140,7 +140,7 @@ const login = async (req, res) => {
         res.status(200).json( nuevo );
     } catch (error) {
         console.error('Error al obtener el usuario:', error);
-        res.status(500).json({ mensaje: 'Error interno del servidor' });
+        res.status(500).json({ mensaje: 'Error interno del servidor3' });
     }
 };
 
