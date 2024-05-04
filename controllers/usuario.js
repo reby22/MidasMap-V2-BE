@@ -100,7 +100,6 @@ const getUserById = async (req, res) => {
 const login = async (req, res) => {
     try {
         const { correo, contraseña } = req.body;
-        console.log(req.body);
         const usuario = await Usuario.findOne({ where: { correo: correo } });
         if (!usuario) {
             res.status(404).json({ mensaje: 'Usuario no encontrado2' });
@@ -123,18 +122,18 @@ const login = async (req, res) => {
             telefono_celular: usuario.telefono_celular,
             correo: usuario.correo,
             contraseña: usuario.contraseña,
-            titulo: String(usuario.id_titulo),
-            licenciatura: String(usuario.id_licenciatura),
+            titulo: req.titulo.titulo,
+            licenciatura: req.licenciatura.licenciatura,
             especialidad: usuario.especialidad,
             sub_especialidad: usuario.sub_especialidad,
             ultima_cedula_dgp: usuario.ultima_cedula_dgp,
-            grado: String(usuario.id_grado),
+            grado: req.grado.grado,
             entidad: req.entidad.nombre,
-            estado: "Prueba",  
-            localidad: "Prueba",
+            estado: req.estado.estado,  
+            localidad: req.localidad.localidad,
             fecha_nacimiento: usuario.fecha_nacimiento,
-            fecha_registro: "1987-09-03T19:33:06.000Z",
-            id_rol: String(usuario.id_rol),            
+            fecha_registro: usuario.fecha_registro,
+            id_rol: req.rol.rol,            
         }
 
         res.status(200).json( nuevo );
@@ -164,6 +163,8 @@ const orderBy = async (req, res) => {
         res.status(500).json({ mensaje: 'Error interno del servidor' });
     }
 };
+
+
 
 module.exports = {
     createUser,

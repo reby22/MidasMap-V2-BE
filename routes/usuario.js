@@ -1,6 +1,6 @@
 const Router = require("express");
 const { createUser, getUserById, login, orderBy} = require("../controllers/usuario");
-const { verifyEntidad, getUsuario } = require("../middlewares/middlewares");
+const { verifyEntidad, getUsuario, VerifyTitulo, verifyLicenciatura, verifyGrado, verifyRol, verifyLocalidad, verifyEstado } = require("../middlewares/middlewares");
 const router = Router();
 
 module.exports = router;
@@ -16,5 +16,5 @@ router.post('/', createUser);
 
 // Ruta para obtener un usuario por su ID
 router.get('/buscar/:id', getUserById);
-router.post('/login',[getUsuario,verifyEntidad],login);
+router.post('/login',[getUsuario,verifyEntidad, VerifyTitulo, verifyLicenciatura, verifyGrado, verifyRol, verifyLocalidad, verifyEstado],login);
 router.get('/orderBy',orderBy);

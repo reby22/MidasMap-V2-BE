@@ -45,7 +45,7 @@ class Server {
 
     routes(){
         this.app.use(this.usersPath, require("./routes/usuario"));
-        this.app.use(this.estadoPath, require("./routes/estado_institucion"));
+        //this.app.use(this.estadoPath, require("./routes/estado_institucion"));
         this.app.use(this.localidadPath, require("./routes/localidad"));
         this.app.use(this.entidadPath, require("./routes/entidad"));
         this.app.use(this.bslPath, require("./routes/bsl"));
