@@ -16,10 +16,10 @@ module.exports = {
     // Fecha 4 meses en el futuro
     const fechaFut4 = new Date(fechaActual.getFullYear(), fechaActual.getMonth() + 4, 0);
 
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 10; i++) {
       data.push({
         id_alerta: i,
-        id_tipo: 1,
+        id_tipo:  Math.floor(Math.random() * 5) + 1,
         id_riesgo: Math.floor(Math.random() * 5) + 1,
         id_usuario: 1,
         fecha_inicio: faker.date.between(fechaPast4, fechaPast2),

@@ -589,6 +589,11 @@ const Reporte = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
       // allowNull defaults to true
+    }, 
+    aprobado: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      // allowNull defaults to true
     },
 
   },
@@ -624,22 +629,30 @@ Reporte.belongsTo(Entidad, { foreignKey: 'id_institucion_casos' });
 Reporte.belongsTo(Entidad, { foreignKey: 'id_laboratorio'});
 Localidad.belongsTo(Estado, { foreignKey: 'id_estado'});
 
+//Entidad
+Localidad.hasMany(Entidad, { foreignKey: 'id_localidad', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Tipo_Entidad.hasMany(Entidad, { foreignKey: 'id_tipo', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Estado.hasMany(Localidad, { foreignKey: 'id_estado', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+//Usuario-Información
+Titulo.hasMany(Usuario, { foreignKey: 'id_titulo', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Licenciatura.hasMany(Usuario, { foreignKey: 'id_licenciatura', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Grado.hasMany(Usuario, { foreignKey: 'id_grado', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Rol.hasMany(Usuario, { foreignKey: 'id_rol', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 
-Localidad.hasOne(Entidad, { foreignKey: 'id_localidad', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Tipo_Entidad.hasOne(Entidad, { foreignKey: 'id_tipo', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Estado.hasOne(Localidad, { foreignKey: 'id_estado', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Titulo.hasOne(Usuario, { foreignKey: 'id_titulo', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Licenciatura.hasOne(Usuario, { foreignKey: 'id_licenciatura', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Grado.hasOne(Usuario, { foreignKey: 'id_grado', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Rol.hasOne(Usuario, { foreignKey: 'id_rol', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Entidad.hasOne(Usuario, { foreignKey: 'id_entidad', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Tipo_Alerta.hasOne(Alerta, { foreignKey: 'id_tipo', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Riesgo.hasOne(Alerta, { foreignKey: 'id_riesgo', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+//Tablas de Alertas
+Tipo_Alerta.hasMany(Alerta, { foreignKey: 'id_tipo', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Riesgo.hasMany(Alerta, { foreignKey: 'id_riesgo', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 Usuario.hasMany(Alerta, { foreignKey: 'id_usuario', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+//
 Usuario.hasMany(Control_usuario, { foreignKey: 'id_administrador' });
-Rol.hasOne(Control_usuario, { foreignKey: 'id_rol', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-BSL.hasOne(Agente_Causal, { foreignKey: 'id_bsl', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Tipo_Enfermedad.hasOne(Agente_Causal, { foreignKey: 'id_tipo_enfermedad', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Usuario.hasMany(Control_usuario, { foreignKey: 'id_usuario' });
+Rol.hasMany(Control_usuario, { foreignKey: 'id_rol', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+//Reporte
+BSL.hasMany(Agente_Causal, { foreignKey: 'id_bsl', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Tipo_Enfermedad.HasMany(Agente_Causal, { foreignKey: 'id_tipo_enfermedad', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Distribucion_Sexo.has_Many(Reporte, {foreignKey: 'id_distribucion', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Modo_Transmision.has_Many(Reporte, {foreignKey: 'id_modo_transmision', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Medida_Tiempo.has_Many(Reporte, {foreignKey: 'id_medida', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 Usuario.hasMany(Reporte, { foreignKey: 'id_usuario', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 Entidad.hasMany(Reporte, { foreignKey: 'id_institucion_casos', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 Entidad.hasMany(Reporte, { foreignKey: 'id_laboratorio', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
