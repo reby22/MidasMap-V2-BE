@@ -1,5 +1,5 @@
-const {Usuario, Localidad} = require('../models/associations');
-
+const {Usuario, Titulo, Grado, Localidad, Estado, Licenciatura, Rol, Entidad, Grupo} = require('../models/associations');
+const Sequelize = require('sequelize');
 
 
 const createUser = async (req, res) => {
@@ -81,88 +81,392 @@ const deleteUser = async (req, res) => {
     }
 };
 */
-const getUserById = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const usuario = await Usuario.findByPk(id);
-        if (!usuario) {
-            res.status(404).json({ mensaje: 'Usuario no encontrado3' });
-            return;
-        }
-        res.status(200).json({ usuario });
-    } catch (error) {
-        console.error('Error al obtener el usuario:', error);
-        res.status(500).json({ mensaje: 'Error interno del servidor' });
-    }
-};
 
+const getUserById = async (req, res) => {
+  const { id_usuario } = req.params;
+  try {
+    const usuario = await Usuario.findByPk(id_usuario, {
+      include: [
+        { model: Titulo, attributes: ['titulo'] },
+        { model: Licenciatura, attributes: ['licenciatura'] },
+        { model: Grado, attributes: ['grado'] },
+        { model: Rol, attributes: ['rol'] },
+        {
+          model: Entidad,
+          attributes: ['nombre'],
+          include: [
+            {
+              model: Localidad,
+              attributes: ['localidad'],
+              include: [{ model: Estado, attributes: ['estado'] }],
+            },
+          ],
+        },
+      ],
+      attributes: [
+        'id_usuario',
+        'nombre',
+        'ap_paterno',
+        'ap_materno',
+        'telefono_fijo',
+        'telefono_celular',
+        'correo',
+        'contraseña',
+        'especialidad',
+        'sub_especialidad',
+        'ultima_cedula_dgp',
+        'fecha_nacimiento',
+        'fecha_registro',
+      ],
+    });
+
+    if (!usuario) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+
+    const usuarioFormateado = {
+      id_usuario: usuario.id_usuario,
+      nombre: usuario.nombre,
+      ap_paterno: usuario.ap_paterno,
+      ap_materno: usuario.ap_materno,
+      telefono_fijo: usuario.telefono_fijo,
+      telefono_celular: usuario.telefono_celular,
+      correo: usuario.correo,
+      contraseña: usuario.contraseña,
+      titulo: usuario.Titulo ? usuario.Titulo.titulo : null,
+      licenciatura: usuario.Licenciatura ? usuario.Licenciatura.licenciatura : null,
+      especialidad: usuario.especialidad,
+      sub_especialidad: usuario.sub_especialidad,
+      ultima_cedula_dgp: usuario.ultima_cedula_dgp,
+      grado: usuario.Grado ? usuario.Grado.grado : null,
+      entidad: usuario.Entidad ? usuario.Entidad.nombre : null,
+      localidad: usuario.Entidad?.Localidad?.localidad || null,
+      estado: usuario.Entidad?.Localidad?.Estado?.estado || null,
+      fecha_nacimiento: usuario.fecha_nacimiento,
+      fecha_registro: usuario.fecha_registro,
+      id_rol: usuario.Rol ? usuario.Rol.rol : null,
+    };
+
+    res.status(200).json(usuarioFormateado);
+  } catch (error) {
+    console.error('Error al obtener usuario:', error);
+    res.status(500).json({ message: 'Error interno del servidor' });
+  }
+};
 
 const login = async (req, res) => {
-    try {
-        const { correo, contraseña } = req.body;
-        const usuario = await Usuario.findOne({ where: { correo: correo } });
-        if (!usuario) {
-            res.status(404).json({ mensaje: 'Usuario no encontrado2' });
-            return;
-        }
+  try {
+    const { correo, contraseña } = req.body;
 
+    // Buscar el usuario por correo y obtener los datos relacionados
+    const usuario = await Usuario.findOne({
+      where: { correo: correo },
+      include: [
+        { model: Titulo, attributes: ['titulo'] },
+        { model: Licenciatura, attributes: ['licenciatura'] },
+        { model: Grado, attributes: ['grado'] },
+        { model: Rol, attributes: ['rol'] },
+        {
+          model: Entidad,
+          attributes: ['nombre'],
+          include: [
+            {
+              model: Localidad,
+              attributes: ['localidad'],
+              include: [{ model: Estado, attributes: ['estado'] }],
+            },
+          ],
+        },
+      ],
+      attributes: [
+        'id_usuario',
+        'nombre',
+        'ap_paterno',
+        'ap_materno',
+        'telefono_fijo',
+        'telefono_celular',
+        'correo',
+        'contraseña',
+        'especialidad',
+        'sub_especialidad',
+        'ultima_cedula_dgp',
+        'fecha_nacimiento',
+        'fecha_registro',
+      ],
+    });
 
-        const contraseñaValida = contraseña === usuario.contraseña;
-
-        if (!contraseñaValida) {
-            res.status(401).json({ mensaje: 'Contraseña incorrecta' });
-            return;
-        }
-        const nuevo = {
-            id_usuario: String(usuario.id_usuario),
-            nombre: usuario.nombre,
-            ap_paterno: usuario.ap_paterno,
-            ap_materno: usuario.ap_materno,
-            telefono_fijo: usuario.telefono_fijo,
-            telefono_celular: usuario.telefono_celular,
-            correo: usuario.correo,
-            contraseña: usuario.contraseña,
-            titulo: req.titulo.titulo,
-            licenciatura: req.licenciatura.licenciatura,
-            especialidad: usuario.especialidad,
-            sub_especialidad: usuario.sub_especialidad,
-            ultima_cedula_dgp: usuario.ultima_cedula_dgp,
-            grado: req.grado.grado,
-            entidad: req.entidad.nombre,
-            estado: req.estado.estado,  
-            localidad: req.localidad.localidad,
-            fecha_nacimiento: usuario.fecha_nacimiento,
-            fecha_registro: usuario.fecha_registro,
-            id_rol: req.rol.rol,            
-        }
-
-        res.status(200).json( nuevo );
-    } catch (error) {
-        console.error('Error al obtener el usuario:', error);
-        res.status(500).json({ mensaje: 'Error interno del servidor3' });
+    // Verificar si el usuario existe
+    if (!usuario) {
+      return res.status(404).json({ error: 'El usuario no existe' });
     }
+
+    // Verificar si la contraseña es correcta
+    if (contraseña !== usuario.contraseña) {
+      return res.status(401).json({ error: 'La contraseña es incorrecta' });
+    }
+
+    // Formatear los datos del usuario para la respuesta
+    const usuarioFormateado = {
+      id_usuario: usuario.id_usuario,
+      nombre: usuario.nombre,
+      ap_paterno: usuario.ap_paterno,
+      ap_materno: usuario.ap_materno,
+      telefono_fijo: usuario.telefono_fijo,
+      telefono_celular: usuario.telefono_celular,
+      correo: usuario.correo,
+      contraseña: usuario.contraseña,
+      titulo: usuario.Titulo ? usuario.Titulo.titulo : null,
+      licenciatura: usuario.Licenciatura ? usuario.Licenciatura.licenciatura : null,
+      especialidad: usuario.especialidad,
+      sub_especialidad: usuario.sub_especialidad,
+      ultima_cedula_dgp: usuario.ultima_cedula_dgp,
+      grado: usuario.Grado ? usuario.Grado.grado : null,
+      entidad: usuario.Entidad ? usuario.Entidad.nombre : null,
+      localidad: usuario.Entidad?.Localidad?.localidad || null,
+      estado: usuario.Entidad?.Localidad?.Estado?.estado || null,
+      fecha_nacimiento: usuario.fecha_nacimiento,
+      fecha_registro: usuario.fecha_registro,
+      id_rol: usuario.Rol ? usuario.Rol.rol : null,
+    };
+
+    res.status(200).json(usuarioFormateado);
+  } catch (error) {
+    console.error('Error al realizar el inicio de sesión:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
 };
 
-const orderBy = async (req, res) => {
-    try {
-        // Obtenemos todos los usuarios ordenados por su nombre
-        const usuariosOrdenados = await Usuario.findAll({
-            order: [['nombre', 'ASC']]
-        });
+const getAllUsers = async (req, res) => {
+    Usuario.findAll({
+        include: [
+          { model: Titulo, attributes: ['titulo'] },
+          { model: Licenciatura, attributes: ['licenciatura'] },
+          { model: Grado, attributes: ['grado'] },
+          { model: Rol, attributes: ['rol'] },
+          {
+            model: Entidad, atributes: ['nombre'],
+            include: [
+              {
+                model: Localidad, attributes: ['localidad'],
+                include: [
+                  {
+                    model: Estado, attributes:['estado']
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        attributes: [
+          'id_usuario',
+          'nombre',
+          'ap_paterno',
+          'ap_materno',
+          'telefono_fijo',
+          'telefono_celular',
+          'correo',
+          'contraseña',
+          'especialidad',
+          'sub_especialidad',
+          'ultima_cedula_dgp',
+          'fecha_nacimiento',
+          'fecha_registro',
+        ]
+      }).then(usuarios => {
+        // Procesar los usuarios obtenidos aquí
+        const usuariosFormateados = usuarios.map(usuario => ({
+          id_usuario: usuario.id_usuario,
+          nombre: usuario.nombre,
+          ap_paterno: usuario.ap_paterno,
+          ap_materno: usuario.ap_materno,
 
-        // Verificamos si se encontraron usuarios
-        if (usuariosOrdenados.length === 0) {
-            res.status(404).json({ mensaje: 'No se encontraron usuarios' });
-            return;
-        }
+          telefono_fijo: usuario.telefono_fijo,
+          telefono_celular: usuario.telefono_celular,
+          correo: usuario.correo,
+          contraseña: usuario.contraseña,
+          titulo: usuario.Titulo ? usuario.Titulo.titulo : null,
+          licenciatura: usuario.Licenciatura ? usuario.Licenciatura.licenciatura : null,
+          especialidad: usuario.especialidad,
+          sub_especialidad: usuario.sub_especialidad,
+          ultima_cedula_dgp: usuario.ultima_cedula_dgp,
+          grado: usuario.Grado ? usuario.Grado.grado : null,
+          
+          entidad: usuario.Entidad ? usuario.Entidad.nombre :null,
+          localidad: usuario.Entidad.Localidad ? usuario.Entidad.Localidad.localidad :null,
+          estado: usuario.Entidad.Localidad.Estado ? usuario.Entidad.Localidad.Estado.estado : null,
+          fecha_nacimiento: usuario.fecha_nacimiento,
+          fecha_registro: usuario.fecha_registro,
+          id_rol: usuario.Rol ? usuario.Rol.rol : null,
 
-        // Enviamos la lista de usuarios ordenados en la respuesta
-        res.status(200).json({ usuarios: usuariosOrdenados });
-    } catch (error) {
-        console.error('Error al obtener los usuarios:', error);
-        res.status(500).json({ mensaje: 'Error interno del servidor' });
-    }
+        }));
+        res.status(200).json(usuariosFormateados);
+        // Aquí puedes enviar usuariosFormateados a donde lo necesites
+      }).catch(error => {
+        console.error('Error al obtener usuarios:', error);
+      });
 };
+
+const searchByTerm = async (req, res) => {
+  try {
+    const searchTerm = req.query.nombre || ''; // Obtener el término de búsqueda del query params
+    console.log(searchTerm);
+    const searchTermLowerCase = searchTerm.toLowerCase(); // Convertir el término de búsqueda a minúsculas
+    const searchTermUpperCase = searchTerm.toUpperCase(); // Convertir el término de búsqueda a mayúsculas
+
+    // Buscar todos los usuarios que coincidan con el nombre proporcionado (insensible a mayúsculas y minúsculas)
+    const usuarios = await Usuario.findAll({
+      where: {
+        // Utilizar operadores `Op.or` para buscar en ambos casos de mayúsculas y minúsculas
+        [Sequelize.Op.or]: [
+          Sequelize.where(
+            Sequelize.fn('LOWER', Sequelize.col('Usuario.nombre')),
+            'LIKE',
+            `%${searchTermLowerCase}%`
+          ),
+          Sequelize.where(
+            Sequelize.fn('UPPER', Sequelize.col('Usuario.nombre')),
+            'LIKE',
+            `%${searchTermUpperCase}%`
+          ),
+        ],
+      },
+      include: [
+        { model: Titulo, attributes: ['titulo'] },
+        { model: Licenciatura, attributes: ['licenciatura'] },
+        { model: Grado, attributes: ['grado'] },
+        { model: Rol, attributes: ['rol'] },
+        {
+          model: Entidad,
+          attributes: ['nombre'],
+          include: [
+            {
+              model: Localidad,
+              attributes: ['localidad'],
+              include: [{ model: Estado, attributes: ['estado'] }],
+            },
+          ],
+        },
+      ],
+      attributes: [
+        'id_usuario',
+        'nombre',
+        'ap_paterno',
+        'ap_materno',
+        'telefono_fijo',
+        'telefono_celular',
+        'correo',
+        'contraseña',
+        'especialidad',
+        'sub_especialidad',
+        'ultima_cedula_dgp',
+        'fecha_nacimiento',
+        'fecha_registro',
+      ],
+    });
+
+    // Procesar los usuarios obtenidos
+    const usuariosFormateados = usuarios.map(usuario => ({
+      id_usuario: usuario.id_usuario,
+      nombre: usuario.nombre,
+      ap_paterno: usuario.ap_paterno,
+      ap_materno: usuario.ap_materno,
+      telefono_fijo: usuario.telefono_fijo,
+      telefono_celular: usuario.telefono_celular,
+      correo: usuario.correo,
+      contraseña: usuario.contraseña,
+      titulo: usuario.Titulo ? usuario.Titulo.titulo : null,
+      licenciatura: usuario.Licenciatura ? usuario.Licenciatura.licenciatura : null,
+      especialidad: usuario.especialidad,
+      sub_especialidad: usuario.sub_especialidad,
+      ultima_cedula_dgp: usuario.ultima_cedula_dgp,
+      grado: usuario.Grado ? usuario.Grado.grado : null,
+      entidad: usuario.Entidad ? usuario.Entidad.nombre : null,
+      localidad: usuario.Entidad ? (usuario.Entidad.Localidad ? usuario.Entidad.Localidad.localidad : null) : null,
+      estado: usuario.Entidad ? (usuario.Entidad.Localidad ? (usuario.Entidad.Localidad.Estado ? usuario.Entidad.Localidad.Estado.estado : null) : null) : null,
+      fecha_nacimiento: usuario.fecha_nacimiento,
+      fecha_registro: usuario.fecha_registro,
+      id_rol: usuario.Rol ? usuario.Rol.rol : null,
+    }));
+
+    res.status(200).json(usuariosFormateados);
+  } catch (error) {
+    console.error('Error al obtener usuarios:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
+
+const getAllUsersByRol = async (req, res) => {
+  const { rol } = req.query;
+  Usuario.findAll({
+      include: [
+        { model: Titulo, attributes: ['titulo'] },
+        { model: Licenciatura, attributes: ['licenciatura'] },
+        { model: Grado, attributes: ['grado'] },
+        { model: Rol, where: { rol: rol }, attributes: ['rol']  },
+        {
+          model: Entidad, atributes: ['nombre'],
+          include: [
+            {
+              model: Localidad, attributes: ['localidad'],
+              include: [
+                {
+                  model: Estado, attributes:['estado']
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      attributes: [
+        'id_usuario',
+        'nombre',
+        'ap_paterno',
+        'ap_materno',
+        'telefono_fijo',
+        'telefono_celular',
+        'correo',
+        'contraseña',
+        'especialidad',
+        'sub_especialidad',
+        'ultima_cedula_dgp',
+        'fecha_nacimiento',
+        'fecha_registro',
+      ]
+    }).then(usuarios => {
+      // Procesar los usuarios obtenidos aquí
+      const usuariosFormateados = usuarios.map(usuario => ({
+        id_usuario: usuario.id_usuario,
+        nombre: usuario.nombre,
+        ap_paterno: usuario.ap_paterno,
+        ap_materno: usuario.ap_materno,
+
+        telefono_fijo: usuario.telefono_fijo,
+        telefono_celular: usuario.telefono_celular,
+        correo: usuario.correo,
+        contraseña: usuario.contraseña,
+        titulo: usuario.Titulo ? usuario.Titulo.titulo : null,
+        licenciatura: usuario.Licenciatura ? usuario.Licenciatura.licenciatura : null,
+        especialidad: usuario.especialidad,
+        sub_especialidad: usuario.sub_especialidad,
+        ultima_cedula_dgp: usuario.ultima_cedula_dgp,
+        grado: usuario.Grado ? usuario.Grado.grado : null,
+        
+        entidad: usuario.Entidad ? usuario.Entidad.nombre :null,
+        localidad: usuario.Entidad.Localidad ? usuario.Entidad.Localidad.localidad :null,
+        estado: usuario.Entidad.Localidad.Estado ? usuario.Entidad.Localidad.Estado.estado : null,
+        fecha_nacimiento: usuario.fecha_nacimiento,
+        fecha_registro: usuario.fecha_registro,
+        id_rol: usuario.Rol ? usuario.Rol.rol : null,
+
+      }));
+      res.status(200).json(usuariosFormateados);
+      // Aquí puedes enviar usuariosFormateados a donde lo necesites
+    }).catch(error => {
+      console.error('Error al obtener usuarios:', error);
+    });
+};
+
+
 
 
 
@@ -170,6 +474,8 @@ module.exports = {
     createUser,
     getUserById,
     login,
-    orderBy
+    getAllUsers,
+    searchByTerm,
+    getAllUsersByRol
 };
  

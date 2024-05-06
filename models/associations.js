@@ -649,16 +649,13 @@ Usuario.hasMany(Control_usuario, { foreignKey: 'id_usuario' });
 Rol.hasMany(Control_usuario, { foreignKey: 'id_rol', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 //Reporte
 BSL.hasMany(Agente_Causal, { foreignKey: 'id_bsl', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Tipo_Enfermedad.HasMany(Agente_Causal, { foreignKey: 'id_tipo_enfermedad', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Distribucion_Sexo.has_Many(Reporte, {foreignKey: 'id_distribucion', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Modo_Transmision.has_Many(Reporte, {foreignKey: 'id_modo_transmision', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Medida_Tiempo.has_Many(Reporte, {foreignKey: 'id_medida', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Tipo_Enfermedad.hasMany(Agente_Causal, { foreignKey: 'id_tipo_enfermedad', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Distribucion_Sexo.hasMany(Reporte, {foreignKey: 'id_distribucion', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Modo_Transmision.hasMany(Reporte, {foreignKey: 'id_modo_transmision', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Medida_Tiempo.hasMany(Reporte, {foreignKey: 'id_medida', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 Usuario.hasMany(Reporte, { foreignKey: 'id_usuario', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 Entidad.hasMany(Reporte, { foreignKey: 'id_institucion_casos', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 Entidad.hasMany(Reporte, { foreignKey: 'id_laboratorio', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-
-
-
 
 
 
