@@ -590,8 +590,13 @@ const Reporte = sequelize.define(
       allowNull: false,
       // allowNull defaults to true
     }, 
-    estado_reporte: {
+    aprobado: {
       type: DataTypes.BOOLEAN,
+      allowNull: false,
+      // allowNull defaults to true
+    },
+    estado_reporte: {
+      type: DataTypes.STRING,
       allowNull: false,
       // allowNull defaults to true
     },
@@ -618,7 +623,7 @@ Alerta.belongsTo(Usuario, { foreignKey: 'id_usuario' });
 Control_usuario.belongsTo(Usuario, { foreignKey: 'id_usuario' });
 Control_usuario.belongsTo(Rol, { foreignKey: 'id_rol' });
 Agente_Causal.belongsTo(BSL, { foreignKey: 'id_bsl' });
-Agente_Causal.belongsTo(Tipo_Enfermedad, { foreignKey: 'id_enfermedad' });
+Agente_Causal.belongsTo(Tipo_Enfermedad, { foreignKey: 'id_tipo_enfermedad' });
 Reporte.belongsTo(Agente_Causal, { foreignKey: 'id_agente_causal' });
 Reporte.belongsTo(Distribucion_Sexo, { foreignKey: 'id_distribucion_sexo' });
 Reporte.belongsTo(Modo_Transmision, { foreignKey: 'id_modo_transmision' });
@@ -650,9 +655,10 @@ Rol.hasMany(Control_usuario, { foreignKey: 'id_rol', onDelete: 'CASCADE', onUpda
 //Reporte
 BSL.hasMany(Agente_Causal, { foreignKey: 'id_bsl', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 Tipo_Enfermedad.hasMany(Agente_Causal, { foreignKey: 'id_tipo_enfermedad', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Distribucion_Sexo.hasMany(Reporte, {foreignKey: 'id_distribucion', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Distribucion_Sexo.hasMany(Reporte, {foreignKey: 'id_distribucion_sexo', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 Modo_Transmision.hasMany(Reporte, {foreignKey: 'id_modo_transmision', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Medida_Tiempo.hasMany(Reporte, {foreignKey: 'id_medida', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Medida_Tiempo.hasMany(Reporte, {foreignKey: 'id_medida_dpi', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Medida_Tiempo.hasMany(Reporte, {foreignKey: 'id_medida_dpe', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 Usuario.hasMany(Reporte, { foreignKey: 'id_usuario', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 Entidad.hasMany(Reporte, { foreignKey: 'id_institucion_casos', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 Entidad.hasMany(Reporte, { foreignKey: 'id_laboratorio', onDelete: 'CASCADE', onUpdate: 'CASCADE' });

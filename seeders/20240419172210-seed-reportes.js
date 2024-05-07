@@ -39,7 +39,8 @@ module.exports = {
         id_usuario: Math.floor(random * 21) + 1,
         id_institucion_casos: Math.floor(Math.random() * 10) + 11,
         id_laboratorio: Math.floor(Math.random() * 10) + 1,
-        estado_reporte: 1,
+        aprobado: 1,
+        estado_reporte: "Activo", 
       });
     }
     for (let i = 60; i < 70; i++) {
@@ -76,7 +77,8 @@ module.exports = {
         id_usuario: Math.floor(Math.random() * (21 - 2 + 1)) + 2,
         id_institucion_casos: Math.floor(Math.random() * 10) + 11,
         id_laboratorio: Math.floor(Math.random() * 10) + 1,
-        estado_reporte: 0,
+        aprobado: 0,
+        estado_reporte: "Inactivo",
       });
     }
     await queryInterface.bulkInsert('reportes', data);
