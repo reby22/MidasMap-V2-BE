@@ -1,5 +1,5 @@
 const Router = require("express");
-const { create, getById } = require("../controllers/reporte");
+const { create, getById, getAllReports } = require("../controllers/reporte");
 const router = Router();
 
 module.exports = router;
@@ -8,4 +8,5 @@ module.exports = router;
 router.post('/', create);
 
 // Ruta para obtener un usuario por su ID
-router.get('/:id', getById);
+router.get('/buscar/:id', getById);
+router.get('/todos', getAllReports);

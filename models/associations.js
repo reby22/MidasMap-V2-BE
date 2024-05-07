@@ -600,12 +600,17 @@ const Reporte = sequelize.define(
       allowNull: false,
       // allowNull defaults to true
     },
+    fecha_registro: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      // allowNull defaults to true
+    },
 
   },
   {
     // Other model options go here
     tableName: 'reportes',
-    timestamps: true,
+    timestamps: false,
   },
 );
 
