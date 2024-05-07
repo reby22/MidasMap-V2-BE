@@ -192,7 +192,7 @@ const getAllReports = async(req, res) =>{
       id_reporte: reporte.id_reporte,
       titulo: reporte.titulo,
       descripcion: reporte.descripcion,
-      id_usuario: reporte.Usuario ? reporte.Usuario.id_usuario :null,
+      usuario: reporte.Usuario ? reporte.Usuario.id_usuario :null,
       estado_reporte: reporte.estado_reporte,
 
       institucion: reporte.EntidadReporte ? reporte.EntidadReporte.nombre : null,
