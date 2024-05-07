@@ -247,12 +247,12 @@ const Usuario = sequelize.define(
       // allowNull defaults to true
     },
     fecha_nacimiento: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
       allowNull: false,
       // allowNull defaults to true
     },
     fecha_registro: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
       allowNull: false,
       // allowNull defaults to true
     },
@@ -321,12 +321,12 @@ const Alerta = sequelize.define(
       autoIncrement: true,
     },
     fecha_inicio: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
       allowNull: false,
       // allowNull defaults to true
     },
     fecha_fin: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
       allowNull: false,
     },
     ubicacion: {
@@ -531,12 +531,12 @@ const Reporte = sequelize.define(
       // allowNull defaults to true
     },
     fecha_pid: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
       allowNull: false,
       // allowNull defaults to true
     },
     fecha_upd: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
       allowNull: false,
       // allowNull defaults to true
     },
@@ -601,7 +601,7 @@ const Reporte = sequelize.define(
       // allowNull defaults to true
     },
     fecha_registro: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
       allowNull: false,
       // allowNull defaults to true
     },
