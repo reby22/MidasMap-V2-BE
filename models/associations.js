@@ -635,8 +635,8 @@ Reporte.belongsTo(Modo_Transmision, { foreignKey: 'id_modo_transmision' });
 Reporte.belongsTo(Usuario, { foreignKey: 'id_usuario' });
 Reporte.belongsTo(Medida_Tiempo, { foreignKey: 'id_medida_dpi' });
 Reporte.belongsTo(Medida_Tiempo, { foreignKey: 'id_medida_dpe' });
-Reporte.belongsTo(Entidad, { foreignKey: 'id_institucion_casos' });
-Reporte.belongsTo(Entidad, { foreignKey: 'id_laboratorio'});
+Reporte.belongsTo(Entidad, { foreignKey: 'id_institucion_casos',as: 'EntidadReporte' });
+Reporte.belongsTo(Entidad, { foreignKey: 'id_laboratorio',as: 'EntidadConfirmacion'});
 Localidad.belongsTo(Estado, { foreignKey: 'id_estado'});
 
 //Entidad
@@ -665,8 +665,8 @@ Modo_Transmision.hasMany(Reporte, {foreignKey: 'id_modo_transmision', onDelete: 
 Medida_Tiempo.hasMany(Reporte, {foreignKey: 'id_medida_dpi', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 Medida_Tiempo.hasMany(Reporte, {foreignKey: 'id_medida_dpe', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 Usuario.hasMany(Reporte, { foreignKey: 'id_usuario', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Entidad.hasMany(Reporte, { foreignKey: 'id_institucion_casos', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Entidad.hasMany(Reporte, { foreignKey: 'id_laboratorio', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Entidad.hasMany(Reporte, { foreignKey: 'id_institucion_casos', onDelete: 'CASCADE', onUpdate: 'CASCADE', as: 'EntidadReporte'});
+Entidad.hasMany(Reporte, { foreignKey: 'id_laboratorio', onDelete: 'CASCADE', onUpdate: 'CASCADE', as: 'EntidadConfirmacion'});
 
 
 

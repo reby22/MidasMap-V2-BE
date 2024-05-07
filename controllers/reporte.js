@@ -137,18 +137,29 @@ const getAllReports = async(req, res) =>{
           ]
         },
         {
-          model: Entidad, atributes: ['nombre'],
+          model: Entidad,
+          as: 'EntidadReporte', // Alias para la asociación de Entidad con el reporte
+          attributes: ['nombre'],
           include: [
             {
-              model: Localidad, attributes: ['localidad'],
-              include: [
-                {
-                  model: Estado, attributes:['estado']
-                }
-              ]
-            }
-          ]
-        }
+              model: Localidad,
+              attributes: ['localidad'],
+              include: [{ model: Estado, attributes: ['estado'] }],
+            },
+          ],
+        },
+        {
+          model: Entidad,
+          as: 'EntidadConfirmacion', // Alias para la asociación de Entidad con la confirmación
+          attributes: ['nombre'],
+          include: [
+            {
+              model: Localidad,
+              attributes: ['localidad'],
+              include: [{ model: Estado, attributes: ['estado'] }],
+            },
+          ],
+        },
     ],
     attributes: [
       'id_reporte',
@@ -184,9 +195,9 @@ const getAllReports = async(req, res) =>{
       id_usuario: reporte.Usuario ? reporte.Usuario.id_usuario :null,
       estado_reporte: reporte.estado_reporte,
 
-      institucion: reporte.Entidad ? reporte.Entidad.nombre: null,
-      localidad: reporte.Entidad?.Localidad?.localidad || null,
-      estado: reporte.Entidad?.Localidad?.Estado?.estado || null,
+      institucion: reporte.EntidadReporte ? reporte.EntidadReporte.nombre : null,
+      localidad: reporte.EntidadReporte?.Localidad?.localidad || null,
+      estado: reporte.EntidadReporte?.Localidad?.Estado?.estado || null,
 
       longitud: reporte.longitud,
       latitud: reporte.latitud,
@@ -196,9 +207,9 @@ const getAllReports = async(req, res) =>{
       bsl: reporte.Agente_Causal?.BSL?.bsl || null,
       tipo: reporte.Agente_Causal?.Tipo_Enfermedad?.tipo || null,
       
-      inst_conf: reporte.Entidad ? reporte.Entidad.nombre: null,
-      localidad_conf: reporte.Entidad?.Localidad?.localidad || null,
-      estado_conf: reporte.Entidad?.Localidad?.Estado?.estado || null,
+      inst_conf: reporte.EntidadConfirmacion ? reporte.EntidadConfirmacion.nombre : null,
+      localidad_conf: reporte.EntidadConfirmacion?.Localidad?.localidad || null,
+      estado_conf: reporte.EntidadConfirmacion?.Localidad?.Estado?.estado || null,
 
 
       distribucion_sexo: reporte.Distribucion_Sexo.id_distribucion_sexo,
