@@ -14,8 +14,8 @@ module.exports = {
         id_reporte: i + 1,
         titulo: `${faker.date.recent(30)}: Enfermedad ${faker.lorem.word()} (${faker.address.city()}, ${faker.address.county()}, ${faker.address.stateAbbr()})`,
         descripcion: faker.lorem.paragraph(),
-        longitud: Math.floor(Math.random() * ((-86.70) - (-118.450) + 1)) + (-118.450),
-        latitud: Math.floor(Math.random() * (32.717 - 14.533 + 1)) + 14.533,
+        longitud: Math.floor(Math.random() * ((-99.0709) - (-103.3949) + 1)) + (-103.3949),
+        latitud: Math.floor(Math.random() * (21.9737 -  18.3128 + 1)) +  18.3128,
         altitud: Math.floor(random * 5637), // Se agregó 1 al máximo para incluir 5636
         fecha_pid: fechaPid,
         fecha_upd: fechaUpd,
@@ -50,8 +50,8 @@ module.exports = {
         id_reporte: i + 1,
         titulo: `${faker.date.recent(30)}: Enfermedad ${faker.lorem.word()} (${faker.address.city()}, ${faker.address.county()}, ${faker.address.stateAbbr()})`,
         descripcion: faker.lorem.paragraph(),
-        longitud: Math.floor(Math.random() * ((-86.70) - (-118.450) + 1)) + (-118.450),
-        latitud: Math.floor(Math.random() * (32.717 - 14.533 + 1)) + 14.533,
+        longitud: Math.floor(Math.random() * ((-99.0709) - (-103.3949) + 1)) + (-103.3949),
+        latitud: Math.floor(Math.random() * (21.9737 -  18.3128 + 1)) +  18.3128,
         altitud: Math.floor(random * 5637), // Se agregó 1 al máximo para incluir 5636
         fecha_pid: fechaPid,
         fecha_upd: fechaUpd,
