@@ -516,17 +516,17 @@ const Reporte = sequelize.define(
       // allowNull defaults to true
     },
     longitud: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.FLOAT,
       allowNull: false,
       // allowNull defaults to true
     },
     latitud: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.FLOAT,
       allowNull: false,
       // allowNull defaults to true
     },
     altitud: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.FLOAT,
       allowNull: false,
       // allowNull defaults to true
     },
