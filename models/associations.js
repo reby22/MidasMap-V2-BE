@@ -590,7 +590,7 @@ const Reporte = sequelize.define(
       allowNull: false,
       // allowNull defaults to true
     }, 
-    aprobado: {
+    estado_reporte: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       // allowNull defaults to true
