@@ -1,4 +1,4 @@
-const { Alerta, Tipo_Alerta, Usuario, Riesgo } = require('../models/associations');
+const { Alerta, Usuario, Riesgo, Tipo_Alerta } = require('../models/associations');
 
 const create = async (req, res) => {
   try {
@@ -59,6 +59,9 @@ const getAllAlerts = async (req, res) => {
       fecha_fin: alerta.fecha_fin,
       ubicacion: alerta.ubicacion,
       descripcion: alerta.descripcion,
+      administrador: alerta.Usuario ? alerta.Usuario.id_usuario : null,
+      tipo: alerta.Tipo_Alertum ? alerta.Tipo_Alertum.tipo: null, 
+      riesgo: alerta.Riesgo ? alerta.Riesgo.riesgo : null,
     }));
     res.status(200).json(alertasFormateados);
   }).catch(error => {
