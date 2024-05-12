@@ -43,8 +43,25 @@ const getById = async (req, res) => {
     }
 };
 
+const getAllAgentes = async (req, res) => {
+  Agente_Causal.findAll({
+    attributes: ['id_agente', 'agente'],
+  }).then(agentes=>{
+    const agentesFormateados = agentes.map(agente=> (
+      {
+        id_agente_causal: agente.id_agente,
+        agente: agente.agente,
+      }
+    ))
+    res.status(200).json(agentesFormateados);
+  }).catch(error => {
+      console.error('Error al obtener agentes:', error);
+    });
+};
+
 module.exports = {
     create,
-    getById
+    getById,
+    getAllAgentes
 };
  

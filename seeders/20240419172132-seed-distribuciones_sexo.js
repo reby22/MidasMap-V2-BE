@@ -5,7 +5,7 @@ module.exports = {
   async up (queryInterface, Sequelize) {
     const data = [];
 
-    const array = ['Se desconoce', 'Predominantemente Femeninos','Predominantemente Mascuino', 'Ambos Sexos'];
+    const array = ['Se desconoce', 'Predominantemente Femeninos','Predominantemente Masculino', 'Ambos Sexos'];
 
     // Generar datos para cada grado
     for (let i = 0; i < array.length; i++) {

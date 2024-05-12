@@ -91,7 +91,7 @@ module.exports = {
       data.push({
         id_agente: i + 1,
         id_bsl:id_bsls[i],
-        id_tipo_enfermedad: id_tipos[i],
+        id_tipo: id_tipos[i],
         agente: nombres[i],
       });
     }

@@ -26,7 +26,7 @@ class Server {
         this.localidadPath = "/api/localidades";
         this.entidadPath = "/api/entidades";
         this.bslPath = "/api/bsl";
-        this.agente_causalPath = "/api/agenteCausal";
+        this.agente_causalPath = "/api/agentes";
         this.reportePath = "/api/reportes";
         this.tipo_alertaPath = "/api/tipoAlertas";
         this.riesgoPath = "/api/riesgos";
@@ -35,6 +35,10 @@ class Server {
         this.gradoPath = "/api/grados";
         this.licenciaturaPath = "/api/licenciaturas";
         this.tituloPath = "/api/titulos";
+        this.distribucionesPath = "/api/distribuciones";
+        this.transmisionesPath = "/api/transmisiones";
+        this.enfermedadesPath = "/api/enfermedades";
+
 
 
 
@@ -45,7 +49,7 @@ class Server {
 
     routes(){
         this.app.use(this.usersPath, require("./routes/usuario"));
-        //this.app.use(this.estadoPath, require("./routes/estado_institucion"));
+        this.app.use(this.estadoPath, require("./routes/estado"));
         this.app.use(this.localidadPath, require("./routes/localidad"));
         this.app.use(this.entidadPath, require("./routes/entidad"));
         this.app.use(this.bslPath, require("./routes/bsl"));
@@ -58,6 +62,10 @@ class Server {
         this.app.use(this.gradoPath, require("./routes/grado"));
         this.app.use(this.licenciaturaPath, require("./routes/licenciatura"));
         this.app.use(this.tituloPath, require("./routes/titulo"));
+        this.app.use(this.distribucionesPath, require("./routes/distribucion_sexo"));
+        this.app.use(this.transmisionesPath, require("./routes/modo_transmision"));
+        this.app.use(this.enfermedadesPath, require("./routes/tipo_enfermedad"));
+
 
         this.app.get("*", (req, res) => {
             res.status(404).send("Error - ruta no encontrada");

@@ -33,7 +33,7 @@ module.exports = {
         numero_casos_hospitalizados: Math.floor(random * 20),
         numero_muertos: Math.floor(random * 10),
         numero_casos_uci: Math.floor(random * 10),
-        fecha_registro: new Date(),
+        fecha_registro: fechaUpd,
         id_agente_causal: Math.floor(random * 210) + 1,
         id_usuario: Math.floor(random * 21) + 1,
         id_institucion_casos: Math.floor(Math.random() * 10) + 11,
@@ -69,7 +69,7 @@ module.exports = {
         numero_casos_hospitalizados: Math.floor(random * 20),
         numero_muertos: Math.floor(random * 10),
         numero_casos_uci: Math.floor(random * 10),
-        fecha_registro: new Date(),
+        fecha_registro: fechaUpd,
         id_agente_causal: Math.floor(random * 210) + 1,
         // solo coolaboradores 
         id_usuario: Math.floor(Math.random() * (21 - 2 + 1)) + 2,

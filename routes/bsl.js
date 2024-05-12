@@ -1,11 +1,13 @@
 const Router = require("express");
-const { create, getById } = require("../controllers/bsl");
+const { create, getById, getAllbsls } = require("../controllers/bsl");
 const router = Router();
 
 module.exports = router;
 
 // Ruta para crear un nuevo usuario
-router.post('/', create);
+//router.post('/', create);
 
 // Ruta para obtener un usuario por su ID
-router.get('/:id', getById);
+//router.get('/:id', getById);
+
+router.get('/todos',getAllbsls);

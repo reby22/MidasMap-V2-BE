@@ -324,7 +324,30 @@ const searchByTerm = async (req, res) => {
             `%${searchTermLowerCase}%`
           ),
           Sequelize.where(
+            Sequelize.fn('LOWER', Sequelize.col('Usuario.ap_materno')),
+            'LIKE',
+            `%${searchTermLowerCase}%`
+          ),
+          Sequelize.where(
+            Sequelize.fn('LOWER', Sequelize.col('Usuario.ap_paterno')),
+            'LIKE',
+            `%${searchTermLowerCase}%`
+          ),
+          Sequelize.where(
             Sequelize.fn('UPPER', Sequelize.col('Usuario.nombre')),
+
+            'LIKE',
+            `%${searchTermUpperCase}%`
+          ),
+          Sequelize.where(
+            Sequelize.fn('UPPER', Sequelize.col('Usuario.ap_materno')),
+
+            'LIKE',
+            `%${searchTermUpperCase}%`
+          ),
+          Sequelize.where(
+            Sequelize.fn('UPPER', Sequelize.col('Usuario.ap_paterno')),
+
             'LIKE',
             `%${searchTermUpperCase}%`
           ),

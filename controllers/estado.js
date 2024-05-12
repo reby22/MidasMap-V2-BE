@@ -26,6 +26,24 @@ const create= async (req, res) => {
   };
 
 
+  const getAllestados = async (req, res) => {
+    Estado.findAll({
+      attributes: ['id_estado', 'estado'],
+    }).then(estados=>{
+      const estadosFormateados = estados.map(estado=> (
+        {
+          id_estado : estado.id_estado,
+          estado: estado.estado,
+        }
+      ))
+      res.status(200).json(estadosFormateados);
+    }).catch(error => {
+        console.error('Error al obtener estados:', error);
+      });
+  };
+  
+
+
 
 
 const getEstadoById = async (req, res) => {
@@ -45,6 +63,7 @@ const getEstadoById = async (req, res) => {
 
 module.exports = {
     create,
-    getEstadoById
+    getEstadoById,
+    getAllestados
 };
  
