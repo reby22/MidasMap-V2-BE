@@ -1,4 +1,5 @@
 const {Riesgo} = require('../models/associations');
+const Sequelize = require('sequelize');
 
 const create= async (req, res) => {
     try {
@@ -26,7 +27,23 @@ const create= async (req, res) => {
   };
 
 
-
+  const getAllRisk = async (req, res) => {
+    Riesgo.findAll({
+      atributes: [
+        'id_riesgo',
+        'riesgo'
+      ]
+    }).then(riesgos => {
+      const riesgosFormateados = riesgos.map(riesgo => ({
+        id_riesgo: riesgo.id_riesgo,
+        riesgo: riesgo.riesgo
+      }));
+      res.status(200).json(riesgosFormateados);
+    }).catch(error => {
+      console.error('Error al obtener riesgos:', error);
+      res.status(500).json({ error: 'Error interno del servidor' });
+    });
+  }  
 
 const getById = async (req, res) => {
     try {
@@ -45,6 +62,7 @@ const getById = async (req, res) => {
 
 module.exports = {
     create,
-    getById
+    getById,
+    getAllRisk
 };
  

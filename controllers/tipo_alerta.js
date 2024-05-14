@@ -25,8 +25,23 @@ const create= async (req, res) => {
     }
   };
 
-
-
+  const getAllAlertTypes = async (req, res) => {
+    Tipo_Alerta.findAll({
+      atributes: [
+        'id_tipo',
+        'tipo'
+      ]
+    }).then(tipo_alertas => {
+      const tiposFormateados = tipo_alertas.map(tipo_alerta => ({
+        id_tipo: tipo_alerta.id_tipo,
+        tipo: tipo_alerta.tipo
+      }));
+      res.status(200).json(tiposFormateados);
+    }).catch(error => {
+      console.error('Error al obtener tipos alertas:', error);
+      res.status(500).json({ error: 'Error interno del servidor' });
+    });
+  }  
 
 const getById = async (req, res) => {
     try {
@@ -45,6 +60,7 @@ const getById = async (req, res) => {
 
 module.exports = {
     create,
+    getAllAlertTypes,
     getById
 };
  
