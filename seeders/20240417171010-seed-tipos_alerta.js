@@ -4,7 +4,7 @@
 module.exports = {
   async up (queryInterface, Sequelize) {
     const data = [];
-    const nombresTipos = ['Aviso', 'Alerta', 'Brote', 'Epidemia', ' Pandemia'];
+    const nombresTipos = ['Aviso', 'Alerta', 'Brote', 'Epidemia', 'Pandemia'];
 
     for (let i = 0; i < nombresTipos.length; i++) {
       data.push({
