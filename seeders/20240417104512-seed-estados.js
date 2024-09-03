@@ -10,6 +10,7 @@ module.exports = {
     for (let i = 0; i < nombres.length; i++) {
       data.push({
         id_estado: i + 1,
+        id_pais: 15,
         estado: nombres[i],
       });
     }

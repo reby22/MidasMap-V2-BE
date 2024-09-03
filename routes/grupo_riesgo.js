@@ -1,11 +1,13 @@
 const Router = require("express");
-const { createEntidad, getEntidadById } = require("../controllers/entidad");
+const { create, getById, getAll} = require("../controllers/grupo_riesgo");
 const router = Router();
 
 module.exports = router;
 
 // Ruta para crear un nuevo usuario
-router.post('/', createEntidad);
+//router.post('/', create);
 
 // Ruta para obtener un usuario por su ID
-router.get('/:id', getEntidadById);
+//router.get('/:id', getById);
+
+router.get('/todos',getAll);

@@ -6,7 +6,7 @@ const express = require("express");
 const cors = require("cors"); 
 var env = require('dotenv'); 
 const {dbConnection} = require('./config/dbConnection');
-const {Estado_institucion, Tipo_entidad, Entidad, Titulo, Licenciatura, Grado, Rol, Usuario} = require('./models/associations');
+const {Localidad, Estado, Pais, Titulo, Licenciatura, Grado, Rol, Usuario} = require('./models/associations');
 
 
 class Server {
@@ -22,22 +22,22 @@ class Server {
         
 
         this.usersPath = "/api/usuarios";
-        this.estadoPath = "/api/estados";
-        this.localidadPath = "/api/localidades";
-        this.entidadPath = "/api/entidades";
-        this.bslPath = "/api/bsl";
-        this.agente_causalPath = "/api/agentes";
-        this.reportePath = "/api/reportes";
-        this.tipo_alertaPath = "/api/tipoAlertas";
-        this.riesgoPath = "/api/riesgos";
-        this.alertaPath = "/api/alertas";
-        this.rolPath = "/api/roles";
-        this.gradoPath = "/api/grados";
-        this.licenciaturaPath = "/api/licenciaturas";
-        this.tituloPath = "/api/titulos";
-        this.distribucionesPath = "/api/distribuciones";
+        this.estadosPath = "/api/estados";
+        this.localidadesPath = "/api/localidades";
+        this.paisesPath = "/api/paises";
+        this.grupos_riesgoPath = "/api/gruposRiesgo";
+        this.agentes_causalPath = "/api/agentes";
+        this.reportesPath = "/api/reportes";
+        this.tipos_notificacionPath = "/api/tiposNotificacion";
+        this.riesgosPath = "/api/riesgos";
+        this.notificacionesPath = "/api/notificaciones";
+        this.rolesPath = "/api/roles";
+        this.gradosPath = "/api/grados";
+        this.licenciaturasPath = "/api/licenciaturas";
+        this.titulosPath = "/api/titulos";
         this.transmisionesPath = "/api/transmisiones";
-        this.enfermedadesPath = "/api/enfermedades";
+        this.patogenosPath = "/api/patogenos";
+        this.medidasPath = "/api/medidasTiempo";
 
 
 
@@ -49,23 +49,22 @@ class Server {
 
     routes(){
         this.app.use(this.usersPath, require("./routes/usuario"));
-        this.app.use(this.estadoPath, require("./routes/estado"));
-        this.app.use(this.localidadPath, require("./routes/localidad"));
-        this.app.use(this.entidadPath, require("./routes/entidad"));
-        this.app.use(this.bslPath, require("./routes/bsl"));
-        this.app.use(this.agente_causalPath, require("./routes/agente_causal"));
-        this.app.use(this.reportePath, require("./routes/reporte"));
-        this.app.use(this.tipo_alertaPath, require("./routes/tipo_alerta"));
-        this.app.use(this.riesgoPath, require("./routes/riesgo"));
-        this.app.use(this.alertaPath, require("./routes/alerta"));
-        this.app.use(this.rolPath, require("./routes/rol"));
-        this.app.use(this.gradoPath, require("./routes/grado"));
-        this.app.use(this.licenciaturaPath, require("./routes/licenciatura"));
-        this.app.use(this.tituloPath, require("./routes/titulo"));
-        this.app.use(this.distribucionesPath, require("./routes/distribucion_sexo"));
-        this.app.use(this.transmisionesPath, require("./routes/modo_transmision"));
-        this.app.use(this.enfermedadesPath, require("./routes/tipo_enfermedad"));
-
+        this.app.use(this.estadosPath, require("./routes/estado"));
+        this.app.use(this.localidadesPath, require("./routes/localidad"));
+        this.app.use(this.paisesPath, require("./routes/pais"));
+        this.app.use(this.grupos_riesgoPath, require("./routes/grupo_riesgo"));
+        this.app.use(this.agentes_causalPath, require("./routes/agente_causal"));
+        this.app.use(this.reportesPath, require("./routes/reporte"));
+        this.app.use(this.tipos_notificacionPath, require("./routes/tipo_notificacion"));
+        this.app.use(this.riesgosPath, require("./routes/riesgo"));
+        this.app.use(this.notificacionesPath, require("./routes/notificacion"));
+        this.app.use(this.rolesPath, require("./routes/rol"));
+        this.app.use(this.gradosPath, require("./routes/grado"));
+        this.app.use(this.licenciaturasPath, require("./routes/licenciatura"));
+        this.app.use(this.titulosPath, require("./routes/titulo"));
+        this.app.use(this.transmisionesPath, require("./routes/ruta_transmision"));
+        this.app.use(this.patogenosPath, require("./routes/tipo_patogeno"));
+        this.app.use(this.medidasPath, require("./routes/medida_tiempo"));
 
         this.app.get("*", (req, res) => {
             res.status(404).send("Error - ruta no encontrada");

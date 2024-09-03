@@ -18,7 +18,7 @@ module.exports = {
 
     for (let i = 1; i <= 10; i++) {
       data.push({
-        id_alerta: i,
+        id_notificacion: i,
         id_tipo:  Math.floor(Math.random() * 5) + 1,
         id_riesgo: Math.floor(Math.random() * 5) + 1,
         id_usuario: 1,
@@ -31,8 +31,8 @@ module.exports = {
 
     for (let i = 6; i <= 5; i++) {
       data.push({
-        id_alerta: i,
-        id_tipo: 1,
+        id_notificacion: i,
+        id_tipo: Math.floor(Math.random() * 5) + 1,
         id_riesgo: Math.floor(Math.random() * 5) + 1,
         id_usuario: 1,
         fecha_inicio: aker.date.between(fechaActual, fechaFut2),
@@ -42,10 +42,10 @@ module.exports = {
       });
     }
 
-    await queryInterface.bulkInsert('alertas', data);
+    await queryInterface.bulkInsert('notificaciones', data);
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.bulkDelete('alertas', null, {});
+    await queryInterface.bulkDelete('notificaciones', null, {});
   }
 };

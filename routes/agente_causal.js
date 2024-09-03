@@ -1,5 +1,5 @@
 const Router = require("express");
-const { create, getById, getAllAgentes } = require("../controllers/agente_causal");
+const { create, getById, getAll } = require("../controllers/agente_causal");
 const router = Router();
 
 module.exports = router;
@@ -10,4 +10,4 @@ module.exports = router;
 // Ruta para obtener un usuario por su ID
 //router.get('/:id', getById);
 
-router.get('/todos', getAllAgentes);
+router.get('/todos', getAll);

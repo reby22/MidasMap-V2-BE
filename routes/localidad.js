@@ -1,11 +1,11 @@
 const Router = require("express");
-const { createLocalidad, getLocalidadById } = require("../controllers/localidad");
+const { create, getById } = require("../controllers/localidad");
 const router = Router();
 
 module.exports = router;
 
 // Ruta para crear un nuevo usuario
-router.post('/', createLocalidad);
+router.post('/', create);
 
 // Ruta para obtener un usuario por su ID
-router.get('/:id', getLocalidadById);
+router.get('/:id', getById);

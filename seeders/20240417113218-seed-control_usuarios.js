@@ -9,7 +9,7 @@ module.exports = {
         id_control_usuario: i-1,
         id_usuario: i,
         id_administrador: 1,
-        id_rol: 2,
+        id_rol_anterior: 2,
         createdAt: new Date(),
         updatedAt: new Date(),
 

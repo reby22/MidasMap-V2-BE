@@ -1,5 +1,5 @@
 const Router = require("express");
-const { create, getById, getAllAlerts, searchAlerts ,} = require("../controllers/alerta");
+const { create, getById, getAll, search} = require("../controllers/notificacion");
 const router = Router();
 
 module.exports = router;
@@ -10,6 +10,6 @@ router.post('/', create);
 // Ruta para obtener un usuario por su ID
 router.get('/buscar/:id', getById);
 
-router.get('/todos', getAllAlerts);
+router.get('/todos', getAll);
 
-router.get('/buscador',searchAlerts);
+router.get('/buscador',search);

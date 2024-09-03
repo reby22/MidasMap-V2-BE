@@ -1,6 +1,29 @@
 const { DataTypes, ForeignKeyConstraintError } = require('sequelize');
 const { sequelize } = require('../config/dbConnection');
 
+const Pais = sequelize.define(
+  'Pais',
+  {
+    // Model attributes are defined here
+    id_pais: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    pais: {
+      type: DataTypes.STRING(40),
+      allowNull: false,
+      // allowNull defaults to true
+    },
+  },
+  {
+    // Other model options go here
+    tableName: 'paises',
+    timestamps: false
+  },
+);
+
 const Estado = sequelize.define(
   'Estado',
   {
@@ -10,6 +33,10 @@ const Estado = sequelize.define(
       allowNull: false,
       primaryKey: true,
       autoIncrement: true,
+    },
+    id_pais: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
     },
     estado: {
       type: DataTypes.STRING(40),
@@ -34,6 +61,10 @@ const Localidad = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
+    id_estado: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
     localidad: {
       type: DataTypes.STRING(40),
       allowNull: false,
@@ -46,8 +77,6 @@ const Localidad = sequelize.define(
     timestamps: false
   },
 );
-
-
 
 const Titulo = sequelize.define(
   'Titulo',
@@ -118,51 +147,6 @@ const Grado = sequelize.define(
   },
 );
 
-const Tipo_Entidad = sequelize.define(
-  'Tipo_Entidad',
-  {
-    // Model attributes are defined here
-    id_tipo: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
-      primaryKey: true,
-      autoIncrement: true,
-    },
-    tipo: {
-      type: DataTypes.STRING(20),
-      allowNull: false,
-      // allowNull defaults to true
-    },
-  },
-  {
-    // Other model options go here
-    tableName: 'tipos_entidad',
-    timestamps: false
-  },
-);
-const Entidad = sequelize.define(
-  'Entidad',
-  {
-    // Model attributes are defined here
-    id_entidad: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
-      primaryKey: true,
-      autoIncrement: true,
-    },
-    nombre: {
-      type: DataTypes.STRING(40),
-      allowNull: false,
-      // allowNull defaults to true
-    },
-  },
-  {
-    // Other model options go here
-    tableName: 'entidades',
-    timestamps: false
-  },
-);
-
 const Rol = sequelize.define(
   'Rol',
   {
@@ -196,6 +180,22 @@ const Usuario = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
+    id_rol: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
+    id_titulo: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
+    id_licenciatura: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
+    id_grado: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
     nombre: {
       type: DataTypes.STRING(50),
       allowNull: false,
@@ -221,6 +221,11 @@ const Usuario = sequelize.define(
       allowNull: false,
       // allowNull defaults to true
     },
+    foto_perfil: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      // allowNull defaults to true
+    },
     telefono_fijo: {
       type: DataTypes.STRING(20),
       allowNull: false,
@@ -228,6 +233,11 @@ const Usuario = sequelize.define(
     },
     telefono_celular: {
       type: DataTypes.STRING(20),
+      allowNull: false,
+      // allowNull defaults to true
+    },
+    institucion_inscripcion: {
+      type: DataTypes.STRING(100),
       allowNull: false,
       // allowNull defaults to true
     },
@@ -264,8 +274,8 @@ const Usuario = sequelize.define(
   },
 );
 
-const Tipo_Alerta = sequelize.define(
-  'Tipo_Alerta',
+const Tipo_Notificacion = sequelize.define(
+  'Tipo_Notificacion',
   {
     // Model attributes are defined here
     id_tipo: {
@@ -282,7 +292,7 @@ const Tipo_Alerta = sequelize.define(
   },
   {
     // Other model options go here
-    tableName: 'tipos_alerta',
+    tableName: 'tipos_notificacion',
     timestamps: false
   },
 );
@@ -310,15 +320,27 @@ const Riesgo = sequelize.define(
   },
 );
 
-const Alerta = sequelize.define(
-  'Alerta',
+const Notificacion = sequelize.define(
+  'Notificacion',
   {
     // Model attributes are defined here
-    id_alerta: {
+    id_notificacion: {
       type: DataTypes.BIGINT,
       allowNull: false,
       primaryKey: true,
       autoIncrement: true,
+    },
+    id_administrador: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
+    id_tipo: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
+    id_riesgo: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
     },
     fecha_inicio: {
       type: DataTypes.DATEONLY,
@@ -340,7 +362,7 @@ const Alerta = sequelize.define(
   },
   {
     // Other model options go here
-    tableName: 'alertas',
+    tableName: 'notificaciones',
     timestamps: false
   },
 );
@@ -355,6 +377,18 @@ const Control_usuario = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
+    id_administrador: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
+    id_usuario: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
+    id_rol_anterior: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
   },
   {
     // Other model options go here
@@ -363,30 +397,38 @@ const Control_usuario = sequelize.define(
   },
 );
 
-const BSL = sequelize.define(
-  'BSL',
+const Grupo_Riesgo = sequelize.define(
+  'Grupo_Riesgo',
   {
     // Model attributes are defined here
-    id_bsl: {
+    id_grupo_riesgo: {
       type: DataTypes.BIGINT,
       allowNull: false,
       primaryKey: true,
       autoIncrement: true,
     },
-    grupo: {
+    id_ubicacion: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
+    grupo_riesgo: {
       type: DataTypes.STRING(20),
       allowNull: false,
+    },
+    descripcion: {
+      type: DataTypes.STRING(400),
+      allowNull: true,
     },
   },
   {
     // Other model options go here
-    tableName: 'bsls',
+    tableName: 'grupos_riesgo',
     timestamps: false
   },
 );
 
-const Tipo_Enfermedad = sequelize.define(
-  'Tipo_Enfermedad',
+const Tipo_Patogeno = sequelize.define(
+  'Tipo_Patogeno',
   {
     // Model attributes are defined here
     id_tipo: {
@@ -402,21 +444,30 @@ const Tipo_Enfermedad = sequelize.define(
   },
   {
     // Other model options go here
-    tableName: 'tipos_enfermedad',
+    tableName: 'tipos_patogeno',
     timestamps: false
   },
 );
+
 const Agente_Causal = sequelize.define(
   'Agente_Causal',
   {
     // Model attributes are defined here
-    id_agente: {
+    id_agente_causal: {
       type: DataTypes.BIGINT,
       allowNull: false,
       primaryKey: true,
       autoIncrement: true,
     },
-    agente: {
+    id_tipo_patogeno: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
+    id_grupo_riesgo: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
+    agente_causal: {
       // type: DataTypes.STRING(40),
       type: DataTypes.STRING(150),
       allowNull: false,
@@ -429,46 +480,24 @@ const Agente_Causal = sequelize.define(
   },
 );
 
-const Distribucion_Sexo = sequelize.define(
-  'Distribucion_Sexo',
+const Ruta_Transmision = sequelize.define(
+  'Ruta_Transmision',
   {
     // Model attributes are defined here
-    id_distribucion: {
+    id_ruta_transmision: {
       type: DataTypes.BIGINT,
       allowNull: false,
       primaryKey: true,
       autoIncrement: true,
     },
-    distribucion: {
+    ruta_transmision: {
       type: DataTypes.STRING(40),
       allowNull: false,
     },
   },
   {
     // Other model options go here
-    tableName: 'distribuciones_sexo',
-    timestamps: false
-  },
-);
-
-const Modo_Transmision = sequelize.define(
-  'Modo_Transmision',
-  {
-    // Model attributes are defined here
-    id_modo_transmision: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
-      primaryKey: true,
-      autoIncrement: true,
-    },
-    modo_transmision: {
-      type: DataTypes.STRING(40),
-      allowNull: false,
-    },
-  },
-  {
-    // Other model options go here
-    tableName: 'modos_transmision',
+    tableName: 'rutas_transmision',
     timestamps: false
   },
 );
@@ -505,6 +534,30 @@ const Reporte = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
+    id_usuario: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
+    id_ubicacion: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
+    id_agente_causal: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
+    medida_dpi: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
+    medida_dpe: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
+    id_ruta_transmision: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
     titulo: {
       type: DataTypes.STRING(200),
       allowNull: false,
@@ -513,6 +566,17 @@ const Reporte = sequelize.define(
     descripcion: {
       type: DataTypes.STRING(1000),
       allowNull: false,
+      // allowNull defaults to true
+    },
+    institucion_casos: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      // allowNull defaults to true
+    },
+    //puede ser null
+    laboratorio_confirmacion: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
       // allowNull defaults to true
     },
     longitud: {
@@ -540,7 +604,11 @@ const Reporte = sequelize.define(
       allowNull: false,
       // allowNull defaults to true
     },
-    duracion_promedio_incubacion: {
+    id_agente_causal: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
+    periodo_incubacion: {
       type: DataTypes.INTEGER ,
       allowNull: false,
       // allowNull defaults to true
@@ -575,17 +643,17 @@ const Reporte = sequelize.define(
       allowNull: false,
       // allowNull defaults to true
     },
-    numero_casos_hospitalizados: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      // allowNull defaults to true
-    },
-    numero_muertos: {
+    numero_hospitalizados: {
       type: DataTypes.INTEGER,
       allowNull: false,
       // allowNull defaults to true
     },
     numero_casos_uci: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      // allowNull defaults to true
+    },
+    fallecimientos: {
       type: DataTypes.INTEGER,
       allowNull: false,
       // allowNull defaults to true
@@ -614,61 +682,54 @@ const Reporte = sequelize.define(
   },
 );
 
+Usuario.belongsTo(Titulo, { foreignKey: 'id_titulo',targetKey: 'id_titulo' });
+Usuario.belongsTo(Licenciatura, { foreignKey: 'id_licenciatura',targetKey: 'id_licenciatura' });
+Usuario.belongsTo(Grado, { foreignKey: 'id_grado',targetKey: 'id_grado' });
+Usuario.belongsTo(Rol, { foreignKey: 'id_rol',targetKey: 'id_rol' });
+Notificacion.belongsTo(Tipo_Notificacion, { foreignKey: 'id_tipo' ,targetKey: 'id_tipo'});
+Notificacion.belongsTo(Riesgo, { foreignKey: 'id_riesgo',targetKey: 'id_riesgo' });
+Notificacion.belongsTo(Usuario, { foreignKey: 'id_administrador' ,targetKey: 'id_usuario'});
+Control_usuario.belongsTo(Usuario, { foreignKey: 'id_usuario',targetKey: 'id_usuario' });
+Control_usuario.belongsTo(Usuario, { foreignKey: 'id_administrador' ,targetKey: 'id_usuario'});
+Control_usuario.belongsTo(Rol, { foreignKey: 'id_rol_anterior' ,targetKey: 'id_rol'});
+Agente_Causal.belongsTo(Grupo_Riesgo, { foreignKey: 'id_grupo_riesgo' ,targetKey: 'id_grupo_riesgo'});
+Agente_Causal.belongsTo(Tipo_Patogeno, { foreignKey: 'id_tipo' ,targetKey: 'id_tipo'});
+Reporte.belongsTo(Localidad, {foreignKey: 'id_ubicacion',targetKey: 'id_localidad',as: 'ubicacion' });
+Reporte.belongsTo(Agente_Causal, { foreignKey: 'id_agente_causal' ,targetKey: 'id_agente_causal',as: 'agente_causal'});
+Reporte.belongsTo(Ruta_Transmision, { foreignKey: 'id_ruta_transmision',targetKey: 'id_ruta_transmision' });
+Reporte.belongsTo(Usuario, { foreignKey: 'id_usuario' ,targetKey: 'id_titulo'});
+Reporte.belongsTo(Medida_Tiempo, { foreignKey: 'id_medida_dpi' ,targetKey: 'id_medida'});
+Reporte.belongsTo(Medida_Tiempo, { foreignKey: 'id_medida_dpe' ,targetKey: 'id_medida'});
+Localidad.belongsTo(Estado, { foreignKey: 'id_estado',targetKey: 'id_estado'});
+Estado.belongsTo(Pais, { foreignKey: 'id_pais',targetKey: 'id_pais'});
 
-Entidad.belongsTo(Localidad, { foreignKey: 'id_localidad' });
-Entidad.belongsTo(Tipo_Entidad, { foreignKey: 'id_tipo' });
-Usuario.belongsTo(Titulo, { foreignKey: 'id_titulo' });
-Usuario.belongsTo(Licenciatura, { foreignKey: 'id_licenciatura' });
-Usuario.belongsTo(Grado, { foreignKey: 'id_grado' });
-Usuario.belongsTo(Rol, { foreignKey: 'id_rol' });
-Usuario.belongsTo(Entidad, { foreignKey: 'id_entidad' });
-Alerta.belongsTo(Tipo_Alerta, { foreignKey: 'id_tipo' });
-Alerta.belongsTo(Riesgo, { foreignKey: 'id_riesgo' });
-Alerta.belongsTo(Usuario, { foreignKey: 'id_usuario' });
-Control_usuario.belongsTo(Usuario, { foreignKey: 'id_usuario' });
-Control_usuario.belongsTo(Rol, { foreignKey: 'id_rol' });
-Agente_Causal.belongsTo(BSL, { foreignKey: 'id_bsl' });
-Agente_Causal.belongsTo(Tipo_Enfermedad, { foreignKey: 'id_tipo' });
-Reporte.belongsTo(Agente_Causal, { foreignKey: 'id_agente_causal' });
-Reporte.belongsTo(Distribucion_Sexo, { foreignKey: 'id_distribucion_sexo' });
-Reporte.belongsTo(Modo_Transmision, { foreignKey: 'id_modo_transmision' });
-Reporte.belongsTo(Usuario, { foreignKey: 'id_usuario' });
-Reporte.belongsTo(Medida_Tiempo, { foreignKey: 'id_medida_dpi' });
-Reporte.belongsTo(Medida_Tiempo, { foreignKey: 'id_medida_dpe' });
-Reporte.belongsTo(Entidad, { foreignKey: 'id_institucion_casos',as: 'EntidadReporte' });
-Reporte.belongsTo(Entidad, { foreignKey: 'id_laboratorio',as: 'EntidadConfirmacion'});
-Localidad.belongsTo(Estado, { foreignKey: 'id_estado'});
+//Paises
+Estado.hasMany(Localidad, { foreignKey: 'id_estado',sourceKey: 'id_estado', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Pais.hasMany(Estado, { foreignKey: 'id_pais',sourceKey: 'id_pais', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 
-//Entidad
-Localidad.hasMany(Entidad, { foreignKey: 'id_localidad', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Tipo_Entidad.hasMany(Entidad, { foreignKey: 'id_tipo', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Estado.hasMany(Localidad, { foreignKey: 'id_estado', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 //Usuario-Información
-Titulo.hasMany(Usuario, { foreignKey: 'id_titulo', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Licenciatura.hasMany(Usuario, { foreignKey: 'id_licenciatura', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Grado.hasMany(Usuario, { foreignKey: 'id_grado', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Rol.hasMany(Usuario, { foreignKey: 'id_rol', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Titulo.hasMany(Usuario, { foreignKey: 'id_titulo',sourceKey: 'id_titulo', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Licenciatura.hasMany(Usuario, { foreignKey: 'id_licenciatura',sourceKey: 'id_licenciatura', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Grado.hasMany(Usuario, { foreignKey: 'id_grado',sourceKey: 'id_grado', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Rol.hasMany(Usuario, { foreignKey: 'id_rol',sourceKey: 'id_rol', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 
-//Tablas de Alertas
-Tipo_Alerta.hasMany(Alerta, { foreignKey: 'id_tipo', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Riesgo.hasMany(Alerta, { foreignKey: 'id_riesgo', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Usuario.hasMany(Alerta, { foreignKey: 'id_usuario', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+//Tablas de Notificacion
+Tipo_Notificacion.hasMany(Notificacion, { foreignKey: 'id_tipo',sourceKey: 'id_tipo', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Riesgo.hasMany(Notificacion, { foreignKey: 'id_riesgo',sourceKey: 'id_riesgo', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Usuario.hasMany(Notificacion, { foreignKey: 'id_administrador',sourceKey: 'id_usuario', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 //
-Usuario.hasMany(Control_usuario, { foreignKey: 'id_administrador' });
-Usuario.hasMany(Control_usuario, { foreignKey: 'id_usuario' });
-Rol.hasMany(Control_usuario, { foreignKey: 'id_rol', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Usuario.hasMany(Control_usuario, { foreignKey: 'id_administrador' ,sourceKey: 'id_usuario'});
+Usuario.hasMany(Control_usuario, { foreignKey: 'id_usuario' ,sourceKey: 'id_usuario', onDelete: 'CASCADE', onUpdate: 'CASCADE'});
+Rol.hasMany(Control_usuario, { foreignKey: 'id_rol_anterior',sourceKey: 'id_rol', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 //Reporte
-BSL.hasMany(Agente_Causal, { foreignKey: 'id_bsl', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Tipo_Enfermedad.hasMany(Agente_Causal, { foreignKey: 'id_tipo', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Distribucion_Sexo.hasMany(Reporte, {foreignKey: 'id_distribucion_sexo', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Modo_Transmision.hasMany(Reporte, {foreignKey: 'id_modo_transmision', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Medida_Tiempo.hasMany(Reporte, {foreignKey: 'id_medida_dpi', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Medida_Tiempo.hasMany(Reporte, {foreignKey: 'id_medida_dpe', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Usuario.hasMany(Reporte, { foreignKey: 'id_usuario', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Entidad.hasMany(Reporte, { foreignKey: 'id_institucion_casos', onDelete: 'CASCADE', onUpdate: 'CASCADE', as: 'EntidadReporte'});
-Entidad.hasMany(Reporte, { foreignKey: 'id_laboratorio', onDelete: 'CASCADE', onUpdate: 'CASCADE', as: 'EntidadConfirmacion'});
-
-
+Grupo_Riesgo.hasMany(Agente_Causal, { foreignKey: 'id_grupo_riesgo',sourceKey: 'id_grupo_riesgo', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Tipo_Patogeno.hasMany(Agente_Causal, { foreignKey: 'id_tipo',sourceKey: 'id_tipo', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Agente_Causal.hasMany(Reporte, { foreignKey: 'id_agente_causal',sourceKey: 'id_agente_causal', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Ruta_Transmision.hasMany(Reporte, {foreignKey: 'id_ruta_transmision',sourceKey: 'id_ruta_transmision', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Medida_Tiempo.hasMany(Reporte, {foreignKey: 'id_medida_dpi',sourceKey: 'id_medida', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Medida_Tiempo.hasMany(Reporte, {foreignKey: 'id_medida_dpe',sourceKey: 'id_medida', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Usuario.hasMany(Reporte, { foreignKey: 'id_usuario',sourceKey: 'id_usuario', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Localidad.hasMany(Reporte, {foreignKey: 'id_ubicacion',sourceKey: 'id_localidad',onDelete: 'CASCADE', onUpdate: 'CASCADE'});
 
 sequelize.sync({ alter: true }).then(() => {
   console.log("DB creada, Todo funciona Bien")
@@ -676,4 +737,4 @@ sequelize.sync({ alter: true }).then(() => {
   console.log(error);
 })
 
-module.exports = { Entidad, Estado, Tipo_Entidad, Titulo, Licenciatura, Grado, Rol, Usuario, Localidad, Reporte, BSL, Tipo_Enfermedad, Agente_Causal, Modo_Transmision, Medida_Tiempo,Distribucion_Sexo, Control_usuario, Alerta, Tipo_Alerta, Riesgo }
+module.exports = { Pais, Estado, Titulo, Licenciatura, Grado, Rol, Usuario, Localidad, Reporte, Grupo_Riesgo, Tipo_Patogeno, Agente_Causal, Ruta_Transmision, Medida_Tiempo, Control_usuario, Notificacion, Tipo_Notificacion, Riesgo }
