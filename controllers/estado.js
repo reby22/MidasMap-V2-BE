@@ -27,14 +27,11 @@ const create = async (req, res) => {
 
 
 const getAll = async (req, res) => {
-  if(!req.query){
-    console.error('Error al obtener estados:', error);
-  }
   const { id_pais } = req.query;
   Estado.findAll({
     attributes: ['id_estado', 'estado', 'id_pais'],
     where: { id_pais: id_pais },
-    order: [['agente_causal', 'ASC']]
+    order: [['estado', 'ASC']]
   }).then(estados => {
     const estadosFormateados = estados.map(estado => (
       {

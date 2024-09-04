@@ -131,7 +131,7 @@ const getAll = async (req, res) => {
       ubicacion: notificacion.ubicacion,
       descripcion: notificacion.descripcion,
       administrador: notificacion.Usuario ? notificacion.Usuario.id_usuario : null,
-      tipo: notificacion.Tipo_Alertum ? notificacion.Tipo_Alertum.tipo : null,
+      tipo: notificacion.Tipo_Notificacion ? notificacion.Tipo_Notificacion.tipo : null,
       riesgo: notificacion.Riesgo ? notificacion.Riesgo.riesgo : null,
     }));
     res.status(200).json(notificacionsFormateados);
