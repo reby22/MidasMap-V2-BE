@@ -19,9 +19,9 @@ module.exports = {
     for (let i = 1; i <= 10; i++) {
       data.push({
         id_notificacion: i,
-        id_tipo:  Math.floor(Math.random() * 5) + 1,
+        id_tipo: Math.floor(Math.random() * 5) + 1,
         id_riesgo: Math.floor(Math.random() * 5) + 1,
-        id_usuario: 1,
+        id_administrador: 1,
         fecha_inicio: faker.date.between(fechaPast4, fechaPast2),
         fecha_fin: faker.date.between(fechaPast2, fechaActual),
         ubicacion: faker.address.city(),
@@ -34,7 +34,7 @@ module.exports = {
         id_notificacion: i,
         id_tipo: Math.floor(Math.random() * 5) + 1,
         id_riesgo: Math.floor(Math.random() * 5) + 1,
-        id_usuario: 1,
+        id_administrador: 1,
         fecha_inicio: aker.date.between(fechaActual, fechaFut2),
         fecha_fin: aker.date.between(fechaFut2, fechaFut4),
         ubicacion: faker.address.city(),

@@ -710,7 +710,7 @@ const getAllReportsinMap = async (req, res) => {
 };
 
 
-const getByIdUsuario = async (req, res) => {
+const getById = async (req, res) => {
   try {
     let rutaCondition = {};
     let tipoConditions = {};
@@ -910,7 +910,7 @@ const destroy = async (req, res) => {
 
 module.exports = {
   create,
-  getByIdUsuario,
+  getById,
   getAllReportsinMap,
   getAllReportsPendientes,
   update,

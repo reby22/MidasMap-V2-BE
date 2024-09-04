@@ -1,12 +1,13 @@
 const Router = require("express");
-const { create, getById, getAll } = require("../controllers/reporte");
+const { create, update, destroy,getById,getAllReportsinMap,getAllReportsPendientes, getAllReportsAceptados } = require("../controllers/reporte");
 const router = Router();
 
 module.exports = router;
 
-// Ruta para crear un nuevo usuario
 router.post('/', create);
-
-// Ruta para obtener un usuario por su ID
+router.put('/actualizar', update);
+router.delete('/:id', destroy);
 router.get('/buscar/:id', getById);
-router.get('/todos', getAll);
+router.get('/mapa', getAllReportsinMap);
+router.get('/pendientes', getAllReportsPendientes);
+router.get('/aceptados', getAllReportsAceptados);

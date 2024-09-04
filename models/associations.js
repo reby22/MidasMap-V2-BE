@@ -407,10 +407,6 @@ const Grupo_Riesgo = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    id_ubicacion: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
-    },
     grupo_riesgo: {
       type: DataTypes.STRING(20),
       allowNull: false,
@@ -546,11 +542,11 @@ const Reporte = sequelize.define(
       type: DataTypes.BIGINT,
       allowNull: false,
     },
-    medida_dpi: {
+    id_medida_dpi: {
       type: DataTypes.BIGINT,
       allowNull: false,
     },
-    medida_dpe: {
+    id_medida_dpe: {
       type: DataTypes.BIGINT,
       allowNull: false,
     },
@@ -579,6 +575,21 @@ const Reporte = sequelize.define(
       allowNull: true,
       // allowNull defaults to true
     },
+    numero_casos_femeninos: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      // allowNull defaults to true
+    },
+    numero_casos_masculinos: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      // allowNull defaults to true
+    },
+    numero_casos_sexo_desconocido: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      // allowNull defaults to true
+    },
     longitud: {
       type: DataTypes.FLOAT,
       allowNull: false,
@@ -603,10 +614,6 @@ const Reporte = sequelize.define(
       type: DataTypes.DATEONLY,
       allowNull: false,
       // allowNull defaults to true
-    },
-    id_agente_causal: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
     },
     periodo_incubacion: {
       type: DataTypes.INTEGER ,
@@ -693,11 +700,11 @@ Control_usuario.belongsTo(Usuario, { foreignKey: 'id_usuario',targetKey: 'id_usu
 Control_usuario.belongsTo(Usuario, { foreignKey: 'id_administrador' ,targetKey: 'id_usuario'});
 Control_usuario.belongsTo(Rol, { foreignKey: 'id_rol_anterior' ,targetKey: 'id_rol'});
 Agente_Causal.belongsTo(Grupo_Riesgo, { foreignKey: 'id_grupo_riesgo' ,targetKey: 'id_grupo_riesgo'});
-Agente_Causal.belongsTo(Tipo_Patogeno, { foreignKey: 'id_tipo' ,targetKey: 'id_tipo'});
+Agente_Causal.belongsTo(Tipo_Patogeno, { foreignKey: 'id_tipo_patogeno' ,targetKey: 'id_tipo'});
 Reporte.belongsTo(Localidad, {foreignKey: 'id_ubicacion',targetKey: 'id_localidad',as: 'ubicacion' });
 Reporte.belongsTo(Agente_Causal, { foreignKey: 'id_agente_causal' ,targetKey: 'id_agente_causal',as: 'agente_causal'});
 Reporte.belongsTo(Ruta_Transmision, { foreignKey: 'id_ruta_transmision',targetKey: 'id_ruta_transmision' });
-Reporte.belongsTo(Usuario, { foreignKey: 'id_usuario' ,targetKey: 'id_titulo'});
+Reporte.belongsTo(Usuario, { foreignKey: 'id_usuario' ,targetKey: 'id_usuario'});
 Reporte.belongsTo(Medida_Tiempo, { foreignKey: 'id_medida_dpi' ,targetKey: 'id_medida'});
 Reporte.belongsTo(Medida_Tiempo, { foreignKey: 'id_medida_dpe' ,targetKey: 'id_medida'});
 Localidad.belongsTo(Estado, { foreignKey: 'id_estado',targetKey: 'id_estado'});
@@ -726,8 +733,8 @@ Grupo_Riesgo.hasMany(Agente_Causal, { foreignKey: 'id_grupo_riesgo',sourceKey: '
 Tipo_Patogeno.hasMany(Agente_Causal, { foreignKey: 'id_tipo',sourceKey: 'id_tipo', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 Agente_Causal.hasMany(Reporte, { foreignKey: 'id_agente_causal',sourceKey: 'id_agente_causal', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 Ruta_Transmision.hasMany(Reporte, {foreignKey: 'id_ruta_transmision',sourceKey: 'id_ruta_transmision', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Medida_Tiempo.hasMany(Reporte, {foreignKey: 'id_medida_dpi',sourceKey: 'id_medida', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Medida_Tiempo.hasMany(Reporte, {foreignKey: 'id_medida_dpe',sourceKey: 'id_medida', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Medida_Tiempo.hasMany(Reporte, {foreignKey: 'id_medida_dpi',sourceKey: 'id_medida' });
+Medida_Tiempo.hasMany(Reporte, {foreignKey: 'id_medida_dpe',sourceKey: 'id_medida'});
 Usuario.hasMany(Reporte, { foreignKey: 'id_usuario',sourceKey: 'id_usuario', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 Localidad.hasMany(Reporte, {foreignKey: 'id_ubicacion',sourceKey: 'id_localidad',onDelete: 'CASCADE', onUpdate: 'CASCADE'});
 

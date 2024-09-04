@@ -27,6 +27,9 @@ const create = async (req, res) => {
 
 
 const getAll = async (req, res) => {
+  if(!req.query){
+    console.error('Error al obtener estados:', error);
+  }
   const { id_pais } = req.query;
   Estado.findAll({
     attributes: ['id_estado', 'estado', 'id_pais'],

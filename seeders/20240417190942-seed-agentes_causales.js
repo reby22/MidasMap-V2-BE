@@ -164,8 +164,8 @@ module.exports = {
     for (let i = 0; i < names.length; i++) {
       data.push({
         id_agente_causal: i + 1,
-        id_grupo: names[i][0],
-        id_tipo: names[i][1],
+        id_grupo_riesgo: names[i][0],
+        id_tipo_patogeno: names[i][1],
         agente_causal: names[i][2],
       });
     }

@@ -121,7 +121,7 @@ const destroy = async (req, res) => {
 };
 
 
-const getUserById = async (req, res) => {
+const getById = async (req, res) => {
   const { id_usuario } = req.params;
   try {
     const usuario = await Usuario.findByPk(id_usuario, {
@@ -599,7 +599,7 @@ const getAllUsersByRol = async (req, res) => {
 
 module.exports = {
   create,
-  getUserById,
+  getById,
   login,
   getAll,
   searchByTerm,

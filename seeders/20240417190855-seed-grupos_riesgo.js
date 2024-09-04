@@ -16,8 +16,8 @@ module.exports = {
 
     for (let i = 0; i < nombreGrupos.length; i++) {
       data.push({
-        id_grupo: i + 1,
-        grupo: nombreGrupos[i],
+        id_grupo_riesgo: i + 1,
+        grupo_riesgo: nombreGrupos[i],
         descripcion: nombreDescripciones[i],
       });
     }

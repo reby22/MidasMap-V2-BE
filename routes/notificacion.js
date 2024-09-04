@@ -1,15 +1,12 @@
 const Router = require("express");
-const { create, getById, getAll, search} = require("../controllers/notificacion");
+const { create, getById, getAll, search,update,destroy} = require("../controllers/notificacion");
 const router = Router();
 
 module.exports = router;
 
-// Ruta para crear un nuevo usuario
 router.post('/', create);
-
-// Ruta para obtener un usuario por su ID
+router.put('/actualizar', update);
 router.get('/buscar/:id', getById);
-
+router.delete('/:id', destroy);
 router.get('/todos', getAll);
-
 router.get('/buscador',search);

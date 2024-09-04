@@ -9,4 +9,4 @@ router.post('/', create);
 
 // Ruta para obtener un usuario por su ID
 router.get('/todos', getAll);
-router.get('/:id', getById);
+router.get('/buscar/:id', getById);

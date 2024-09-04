@@ -1,11 +1,8 @@
 const Router = require("express");
-const { create, getById } = require("../controllers/medida_tiempo");
+const { getById, getAll} = require("../controllers/medida_tiempo");
 const router = Router();
 
 module.exports = router;
 
-// Ruta para crear un nuevo usuario
-router.post('/', create);
-
-// Ruta para obtener un usuario por su ID
-router.get('/:id', getById);
+router.get('/buscar/:id', getById);
+router.get('/todos', getAll);
