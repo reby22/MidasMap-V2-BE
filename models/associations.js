@@ -730,7 +730,7 @@ Usuario.hasMany(Control_usuario, { foreignKey: 'id_usuario' ,sourceKey: 'id_usua
 Rol.hasMany(Control_usuario, { foreignKey: 'id_rol_anterior',sourceKey: 'id_rol', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 //Reporte
 Grupo_Riesgo.hasMany(Agente_Causal, { foreignKey: 'id_grupo_riesgo',sourceKey: 'id_grupo_riesgo', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
-Tipo_Patogeno.hasMany(Agente_Causal, { foreignKey: 'id_tipo',sourceKey: 'id_tipo', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+Tipo_Patogeno.hasMany(Agente_Causal, { foreignKey: 'id_tipo_patogeno',sourceKey: 'id_tipo', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 Agente_Causal.hasMany(Reporte, { foreignKey: 'id_agente_causal',sourceKey: 'id_agente_causal', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 Ruta_Transmision.hasMany(Reporte, {foreignKey: 'id_ruta_transmision',sourceKey: 'id_ruta_transmision', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 Medida_Tiempo.hasMany(Reporte, {foreignKey: 'id_medida_dpi',sourceKey: 'id_medida' });

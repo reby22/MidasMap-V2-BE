@@ -26,7 +26,7 @@ const create = async (req, res) => {
 };
 
 const getAll = async (req, res) => {
-  const { id_estado } = req.query;
+  const { id_estado } = req.params;
   Localidad.findAll({
     attributes: ['id_localidad', 'localidad', 'id_estado'],
     where: { id_estado: id_estado }

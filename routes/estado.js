@@ -6,4 +6,4 @@ const router = Router();
 module.exports = router;
 
 
-router.get('/todos', getAll);
+router.get('/todos/:id_pais', getAll);

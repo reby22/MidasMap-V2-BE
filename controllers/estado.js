@@ -27,7 +27,7 @@ const create = async (req, res) => {
 
 
 const getAll = async (req, res) => {
-  const { id_pais } = req.query;
+  const { id_pais } = req.params;
   Estado.findAll({
     attributes: ['id_estado', 'estado', 'id_pais'],
     where: { id_pais: id_pais },
