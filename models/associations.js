@@ -701,12 +701,12 @@ Control_usuario.belongsTo(Usuario, { foreignKey: 'id_administrador' ,targetKey: 
 Control_usuario.belongsTo(Rol, { foreignKey: 'id_rol_anterior' ,targetKey: 'id_rol'});
 Agente_Causal.belongsTo(Grupo_Riesgo, { foreignKey: 'id_grupo_riesgo' ,targetKey: 'id_grupo_riesgo'});
 Agente_Causal.belongsTo(Tipo_Patogeno, { foreignKey: 'id_tipo_patogeno' ,targetKey: 'id_tipo'});
-Reporte.belongsTo(Localidad, {foreignKey: 'id_ubicacion',targetKey: 'id_localidad',as: 'ubicacion' });
-Reporte.belongsTo(Agente_Causal, { foreignKey: 'id_agente_causal' ,targetKey: 'id_agente_causal',as: 'agente_causal'});
+Reporte.belongsTo(Localidad, {foreignKey: 'id_ubicacion',targetKey: 'id_localidad'});
+Reporte.belongsTo(Agente_Causal, { foreignKey: 'id_agente_causal' ,targetKey: 'id_agente_causal'});
 Reporte.belongsTo(Ruta_Transmision, { foreignKey: 'id_ruta_transmision',targetKey: 'id_ruta_transmision' });
 Reporte.belongsTo(Usuario, { foreignKey: 'id_usuario' ,targetKey: 'id_usuario'});
-Reporte.belongsTo(Medida_Tiempo, { foreignKey: 'id_medida_dpi' ,targetKey: 'id_medida'});
-Reporte.belongsTo(Medida_Tiempo, { foreignKey: 'id_medida_dpe' ,targetKey: 'id_medida'});
+Reporte.belongsTo(Medida_Tiempo, { foreignKey: 'id_medida_dpi' ,targetKey: 'id_medida', as: 'MedidaDpi'});
+Reporte.belongsTo(Medida_Tiempo, { foreignKey: 'id_medida_dpe' ,targetKey: 'id_medida',as: 'MedidaDpe'});
 Localidad.belongsTo(Estado, { foreignKey: 'id_estado',targetKey: 'id_estado'});
 Estado.belongsTo(Pais, { foreignKey: 'id_pais',targetKey: 'id_pais'});
 

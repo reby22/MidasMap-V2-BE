@@ -1,5 +1,5 @@
 const Router = require("express");
-const { create, update, destroy,getById,getAllReportsinMap,getAllReportsPendientes, getAllReportsAceptados } = require("../controllers/reporte");
+const { create, update, destroy,getByIdUsuario,getAllReportsinMap,getAllReportsPendientes, getAllReportsAceptados } = require("../controllers/reporte");
 const router = Router();
 
 module.exports = router;
@@ -7,7 +7,7 @@ module.exports = router;
 router.post('/', create);
 router.put('/actualizar', update);
 router.delete('/:id', destroy);
-router.get('/buscar/:id', getById);
+router.get('/buscar/:id', getByIdUsuario);
 router.get('/mapa', getAllReportsinMap);
 router.get('/pendientes', getAllReportsPendientes);
 router.get('/aceptados', getAllReportsAceptados);

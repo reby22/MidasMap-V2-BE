@@ -4,7 +4,6 @@ const sequelize = new Sequelize('midasmap', 'root',null,{
     host: 'localhost',
     port: 3306,
     dialect: 'mysql',
-    password: "Mohacku1rl!"
 });
 const dbConnection = async () => {
     
