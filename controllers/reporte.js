@@ -186,96 +186,40 @@ const update = async (req, res) => {
   }
 };
 
-const getAllReportesPendientes1 = async (req, res) => {
-  try {
-    const reportesPendientes = await Reporte.findAll({
-      where: {
-        aprobado: false, // O según el campo que maneje el estado del reporte
-      },
-      include: [
-        { model: Usuario, attributes: ['nombre'] }, // Relación con Usuario
-        {
-          model: Agente_Causal,
-          attributes: ['agente_causal'],
-          include: [
-            { model: Grupo_Riesgo, attributes: ['grupo_riesgo'] }, // Relación con Grupo_Riesgo
-            { model: Tipo_Patogeno, attributes: ['tipo'] }, // Relación con Tipo_Patogeno
-          ]
-        },
-        { model: Ruta_Transmision, attributes: ['ruta_transmision'] }, // Relación con Ruta_Transmision
-        {
-          model: Localidad,
-          attributes: ['localidad'],
-          include: [
-            {
-              model: Estado,
-              attributes: ['estado'],
-              include: [
-                { model: Pais, attributes: ['pais'] } // Relación con País
-              ]
-            }
-          ]
-        },
-      ],
-    });
-
-    if (reportesPendientes.length > 0) {
-      res.status(200).json(reportesPendientes);
-    } else {
-      res.status(404).json({ message: 'No hay reportes pendientes.' });
-    }
-  } catch (error) {
-    console.error('Error al obtener reportes pendientes:', error);
-    res.status(500).json({ error: 'Error al obtener los reportes pendientes.' });
-  }
-};
-
 const getAllReportsPendientes = async (req, res) => {
   try {
-    let rutaCondition = {}; //Ruta de transmision
-    let tipoConditions = {}; //tipo patogeno 
-    let grupoConditions = {}; //grupo de riesgo 
-    let agenteConditions = {}; //agente causal
-    let estadoConditions = {}; // estado
-    let paisConditions = {}; //pais 
-    const { titulo, ruta_transmision, tipo, grupo_riesgo, agente_causal, estado, pais } = req.query;
+    const { estado, pais, titulo, ruta_transmision, tipo, grupo_riesgo, agente_causal } = req.query;
     const searchTermLowerCase = (titulo || '').toLowerCase(); // Convertir el término de búsqueda a minúsculas
-    if (ruta_transmision) {
-      rutaCondition = {
-        id_ruta_transmision: ruta_transmision
-      }
-    }
-    if (tipo) {
-      tipoConditions = {
-        id_tipo: tipo
-      }
-    }
-    if (grupo_riesgo) {
-      grupoConditions = {
-        id_grupo_riesgo: grupo_riesgo
-      }
-    }
-    if (agente_causal) {
-      agenteConditions = {
-        id_agente_causal: agente_causal
-      }
-    }
+
+    const whereEstado = {};    // Filtro para Estado
+    const wherePais = {};      // Filtro para Pais
+    const whereRuta = {};
+    const whereTipo = {};
+    const whereGrupo = {};
+    const whereAgente = {};
+
     if (estado) {
-      estadoConditions = {
-        id_estado: estado
-      }
+      whereEstado.id_estado = estado;          // Filtro por nombre de Estado
     }
     if (pais) {
-      paisConditions = {
-        id_pais: pais
-      }
+      wherePais.id_pais = pais;                // Filtro por nombre de País
+    }
+    if (tipo) {
+      whereTipo.id_tipo = tipo;
+    }
+    if (grupo_riesgo) {
+      whereGrupo.id_grupo_riesgo = grupo_riesgo;
+    }
+    if (agente_causal) {
+      whereAgente.id_agente_causal = agente_causal;
+    }
+    if (ruta_transmision) {
+      whereRuta.id_ruta_transmision = ruta_transmision;
     }
 
-    // Buscar todos los usuarios que coincidan con el nombre proporcionado (insensible a mayúsculas y minúsculas)
     const reportes = await Reporte.findAll({
-      order: [['fecha_registro', 'DESC']],  // Ordenar por el campo 'fecha' en orden descendente (más actual primero)
+      order: [['fecha_registro', 'DESC']],
       where: {
-        // Utilizar operadores `Op.or` para buscar en ambos casos de mayúsculas y minúsculas
         [Sequelize.Op.or]: [
           Sequelize.where(
             Sequelize.fn('LOWER', Sequelize.col('Reporte.titulo')),
@@ -287,41 +231,46 @@ const getAllReportsPendientes = async (req, res) => {
       },
       include: [
         {
-          model: Usuario, atributes: ['id_usuario'],
+          model: Localidad,
+          attributes: ['localidad'],
+          where: {
 
+          },
+          include:
+            [{
+              model: Estado,
+              attributes: ['estado'],
+              where:
+                whereEstado
+              ,
+              include: [
+                {
+                  model: Pais,
+                  attributes: ['pais'],
+                  where: wherePais
+                  , as: 'Pais'
+                }
+              ]
+            }]
         },
+        { model: Usuario, atributes: ['id_usuario'] },
         {
           model: Ruta_Transmision, atributes: ['ruta_transmision'],
-          where: rutaCondition
+          where: whereRuta
         },
         {
           model: Agente_Causal, atributes: ['agente_causal'],
-          where: agenteConditions,
+          where: whereAgente,
           include: [
             {
               model: Tipo_Patogeno, attributes: ['tipo'],
-              where: tipoConditions
+              where: whereTipo
             },
             {
               model: Grupo_Riesgo, attributes: ['grupo_riesgo'],
-              where: grupoConditions
+              where: whereGrupo
             },
           ]
-        },
-        {
-          model: Localidad,
-          attributes: ['localidad'],
-          include: [
-            {
-              model: Estado,
-              attributes: ['estado'],
-              where: estadoConditions,
-              include: [{
-                model: Pais, attributes: ['pais'],
-                where: paisConditions
-              }],
-            },
-          ],
         },
         {
           model: Medida_Tiempo,
@@ -333,175 +282,143 @@ const getAllReportsPendientes = async (req, res) => {
           as: 'MedidaDpe',
           attributes: ['medida'],
         }
-      ],
-      attributes: [
-        'id_reporte',
-        'titulo',
-        'descripcion',
-        'institucion_casos',
-        'laboratorio_confirmacion',
-        'numero_casos_femeninos',
-        'numero_casos_masculinos',
-        'numero_casos_sexo_desconocido',
-        'longitud',
-        'latitud',
-        'altitud',
-        'fecha_pid',
-        'fecha_upd',
-        'periodo_incubacion',
-        'duracion_promedio_enfermedad',
-        'signos_sintomas',
-        'numero_casos_sospechosos',
-        'numero_casos_probables',
-        'numero_casos_confirmados',
-        'numero_casos_totales',
-        'numero_hospitalizados',
-        'fallecimientos',
-        'numero_casos_uci',
-        'aprobado',
-        'estado_reporte',
-        'fecha_registro',
-      ],
+      ]
     });
-    const reportesFormateados = reportes.map(reporte => ({
-      // Formatear los datos del reporte para la respuesta
-      id_reporte: reporte.id_reporte,
-      titulo: reporte.titulo,
-      descripcion: reporte.descripcion,
-      usuario: reporte.Usuario ? reporte.Usuario.id_usuario : null,
-      estado_reporte: reporte.estado_reporte,
-      institucion_casos: reporte.institucion_casos,
-      laboratorio_confirmacion: reporte.laboratorio_confirmacion,
-      localidad: reporte.Localidad ? reporte.Localidad.localidad : null,
-      estado: reporte.Localidad?.Estado?.estado || null,
-      pais: reporte.Localidad?.Estado?.Pai?.pais || null,
-      numero_casos_femeninos: reporte.numero_casos_femeninos,
-      numero_casos_masculinos: reporte.numero_casos_masculinos,
-      numero_casos_sexo_desconocido: reporte.numero_casos_sexo_desconocido,
-      longitud: reporte.longitud,
-      latitud: reporte.latitud,
-      altitud: reporte.altitud,
-      agente_causal: reporte.Agente_Causal ?.agente_causal || null,
-      grupo_riesgo: reporte.Agente_Causal?.Grupo_Riesgo?.grupo_riesgo || null,
-      tipo: reporte.Agente_Causal?.Tipo_Patogeno?.tipo || null,
-      ruta_transmision: reporte.Ruta_Transmision.ruta_transmision,
-      numero_casos_sospechosos: reporte.numero_casos_sospechosos,
-      numero_casos_probables: reporte.numero_casos_probables,
-      numero_casos_confirmados: reporte.numero_casos_confirmados,
-      numero_casos_totales: reporte.numero_casos_totales,
-      numero_hospitalizados: reporte.numero_hospitalizados,
-      fallecimientos: reporte.fallecimientos,
-      uci: reporte.numero_casos_uci,
-      periodo_incubacion: reporte.periodo_incubacion,
-      duracion_promedio_enfermedad: reporte.duracion_promedio_enfermedad,
-      signos_sintomas: reporte.signos_sintomas,
-      fecha_pid: reporte.fecha_pid,
-      fecha_upd: reporte.fecha_upd,
-      id_medida_dpi: reporte.MedidaDpi?.medida || null,
-      id_medida_dpe: reporte.MedidaDpe?.medida || null,
-      fecha_registro: reporte.fecha_registro,
-    }));
 
-    res.status(200).json(reportesFormateados);
-    // Aquí puedes enviar usuariosFormateados a donde lo necesites
+    if (reportes.length > 0) {
+      const reportesFormateados = reportes.map(reporte => ({
+        id_reporte: reporte.id_reporte,
+        usuario: reporte.Usuario?.id_usuario || null,
+        titulo: reporte.titulo,
+        descripcion: reporte.descripcion,
+        institucion_casos: reporte.institucion_casos,
+        laboratorio_confirmacion: reporte.laboratorio_confirmacion,
+        localidad: reporte.Localidad?.localidad || null,
+        estado: reporte.Localidad?.Estado?.estado || null,
+        pais: reporte.Localidad?.Estado?.Pais?.pais || null,
+        numero_casos_femeninos: reporte.numero_casos_femeninos,
+        numero_casos_masculinos: reporte.numero_casos_masculinos,
+        numero_casos_sexo_desconocido: reporte.numero_casos_sexo_desconocido,
+        longitud: reporte.longitud,
+        latitud: reporte.latitud,
+        altitud: reporte.altitud,
+        agente_causal: reporte.Agente_Causal?.agente_causal || null,
+        grupo_riesgo: reporte.Agente_Causal?.Grupo_Riesgo?.grupo_riesgo || null,
+        tipo: reporte.Agente_Causal?.Tipo_Patogeno?.tipo || null,
+        ruta_transmision: reporte.Ruta_Transmision?.ruta_transmision || null,
+        numero_casos_sospechosos: reporte.numero_casos_sospechosos,
+        numero_casos_probables: reporte.numero_casos_probables,
+        numero_casos_confirmados: reporte.numero_casos_confirmados,
+        numero_casos_totales: reporte.numero_casos_totales,
+        numero_hospitalizados: reporte.numero_hospitalizados,
+        fallecimientos: reporte.fallecimientos,
+        uci: reporte.numero_casos_uci,
+        periodo_incubacion: reporte.periodo_incubacion,
+        duracion_promedio_enfermedad: reporte.duracion_promedio_enfermedad,
+        signos_sintomas: reporte.signos_sintomas,
+        fecha_pid: reporte.fecha_pid,
+        fecha_upd: reporte.fecha_upd,
+        id_medida_dpi: reporte.MedidaDpi?.medida || null,
+        id_medida_dpe: reporte.MedidaDpe?.medida || null,
+        fecha_registro: reporte.fecha_registro,
+        estado_reporte: reporte.estado_reporte
+
+      }));
+      res.status(200).json(reportesFormateados);
+    } else {
+      res.status(404).json({ message: 'No hay reportes pendientes.' });
+    }
   } catch (error) {
-    console.error('Error al obtener reportes:', error);
-    res.status(500).json({ error: 'Error al obtener reportes' });
+    console.error('Error al obtener reportes pendientes:', error);
+    res.status(500).json({ error: 'Error al obtener los reportes pendientes.' });
   }
 };
 
 const getAllReportsAceptados = async (req, res) => {
   try {
-    let rutaCondition = {};
-    let tipoConditions = {};
-    let grupoConditions = {};
-    let agenteConditions = {};
-    let estadoConditions = {};
-    let paisConditions = {};
-    const { titulo, ruta_transmision, tipo, grupo_riesgo, agente_causal, estado, pais } = req.query;
-    const searchTermLowerCase1 = (titulo || '').toLowerCase(); // Convertir el término de búsqueda a minúsculas
-    if (ruta_transmision) {
-      rutaCondition = {
-        id_ruta_transmision: ruta_transmision
-      }
-    }
-    if (tipo) {
-      tipoConditions = {
-        id_tipo: tipo
-      }
-    }
-    if (grupo_riesgo) {
-      grupoConditions = {
-        id_grupo_riesgo: grupo_riesgo
-      }
-    }
-    if (agente_causal) {
-      agenteConditions = {
-        id_agente_causal: agente_causal
-      }
-    }
+    const { estado, pais, titulo, ruta_transmision, tipo, grupo_riesgo, agente_causal } = req.query;
+    const searchTermLowerCase = (titulo || '').toLowerCase(); // Convertir el término de búsqueda a minúsculas
+
+    const whereEstado = {};    // Filtro para Estado
+    const wherePais = {};      // Filtro para Pais
+    const whereRuta = {};
+    const whereTipo = {};
+    const whereGrupo = {};
+    const whereAgente = {};
+
     if (estado) {
-      estadoConditions = {
-        id_estado: estado
-      }
+      whereEstado.id_estado = estado;          // Filtro por nombre de Estado
     }
     if (pais) {
-      paisConditions = {
-        id_pais: pais
-      }
+      wherePais.id_pais = pais;                // Filtro por nombre de País
+    }
+    if (tipo) {
+      whereTipo.id_tipo = tipo;
+    }
+    if (grupo_riesgo) {
+      whereGrupo.id_grupo_riesgo = grupo_riesgo;
+    }
+    if (agente_causal) {
+      whereAgente.id_agente_causal = agente_causal;
+    }
+    if (ruta_transmision) {
+      whereRuta.id_ruta_transmision = ruta_transmision;
     }
 
-    // Buscar todos los usuarios que coincidan con el nombre proporcionado (insensible a mayúsculas y minúsculas)
     const reportes = await Reporte.findAll({
       order: [['fecha_registro', 'DESC']],
       where: {
-        // Utilizar operadores `Op.or` para buscar en ambos casos de mayúsculas y minúsculas
         [Sequelize.Op.or]: [
           Sequelize.where(
             Sequelize.fn('LOWER', Sequelize.col('Reporte.titulo')),
             'LIKE',
-            `%${searchTermLowerCase1}%`
+            `%${searchTermLowerCase}%`
           ),
         ],
         aprobado: 1
       },
       include: [
         {
-          model: Usuario, atributes: ['id_usuario'],
+          model: Localidad,
+          attributes: ['localidad'],
+          where: {
+
+          },
+          include:
+            [{
+              model: Estado,
+              attributes: ['estado'],
+              where:
+                whereEstado
+              ,
+              include: [
+                {
+                  model: Pais,
+                  attributes: ['pais'],
+                  where: wherePais
+                  , as: 'Pais'
+                }
+              ]
+            }]
         },
+        { model: Usuario, atributes: ['id_usuario'] },
         {
           model: Ruta_Transmision, atributes: ['ruta_transmision'],
-          where: rutaCondition
+          where: whereRuta
         },
         {
           model: Agente_Causal, atributes: ['agente_causal'],
-          where: agenteConditions,
+          where: whereAgente,
           include: [
             {
               model: Tipo_Patogeno, attributes: ['tipo'],
-              where: tipoConditions
-
+              where: whereTipo
             },
             {
               model: Grupo_Riesgo, attributes: ['grupo_riesgo'],
-              where: grupoConditions
+              where: whereGrupo
             },
           ]
-        },
-        {
-          model: Localidad,
-          attributes: ['localidad'],
-          include: [
-            {
-              model: Estado,
-              attributes: ['estado'],
-              where: estadoConditions,
-              include: [{
-                model: Pais, attributes: ['pais'],
-                where: paisConditions
-              }],
-            },
-          ],
         },
         {
           model: Medida_Tiempo,
@@ -513,174 +430,145 @@ const getAllReportsAceptados = async (req, res) => {
           as: 'MedidaDpe',
           attributes: ['medida'],
         }
-      ],
-      attributes: [
-        'id_reporte',
-        'titulo',
-        'descripcion',
-        'institucion_casos',
-        'laboratorio_confirmacion',
-        'numero_casos_femeninos',
-        'numero_casos_masculinos',
-        'numero_casos_sexo_desconocido',
-        'longitud',
-        'latitud',
-        'altitud',
-        'fecha_pid',
-        'fecha_upd',
-        'periodo_incubacion',
-        'duracion_promedio_enfermedad',
-        'signos_sintomas',
-        'numero_casos_sospechosos',
-        'numero_casos_probables',
-        'numero_casos_confirmados',
-        'numero_casos_totales',
-        'numero_hospitalizados',
-        'fallecimientos',
-        'numero_casos_uci',
-        'aprobado',
-        'estado_reporte',
-        'fecha_registro',
-      ],
+      ]
     });
-    const reportesFormateados = reportes.map(reporte => ({
-      // Formatear los datos del reporte para la respuesta
-      id_reporte: reporte.id_reporte,
-      titulo: reporte.titulo,
-      descripcion: reporte.descripcion,
-      usuario: reporte.Usuario ? reporte.Usuario.id_usuario : null,
-      estado_reporte: reporte.estado_reporte,
-      institucion_casos: reporte.institucion_casos,
-      laboratorio_confirmacion: reporte.laboratorio_confirmacion,
-      localidad: reporte.Localidad ? reporte.Localidad.localidad : null,
-      estado: reporte.Localidad?.Estado?.estado || null,
-      pais: reporte.Localidad?.Estado?.Pai?.pais || null,
-      numero_casos_femeninos: reporte.numero_casos_femeninos,
-      numero_casos_masculinos: reporte.numero_casos_masculinos,
-      numero_casos_sexo_desconocido: reporte.numero_casos_sexo_desconocido,
-      longitud: reporte.longitud,
-      latitud: reporte.latitud,
-      altitud: reporte.altitud,
-      agente_causal: reporte.Agente_Causal ?.agente_causal || null,
-      grupo_riesgo: reporte.Agente_Causal?.Grupo_Riesgo?.grupo_riesgo || null,
-      tipo: reporte.Agente_Causal?.Tipo_Patogeno?.tipo || null,
-      ruta_transmision: reporte.Ruta_Transmision.ruta_transmision,
-      numero_casos_sospechosos: reporte.numero_casos_sospechosos,
-      numero_casos_probables: reporte.numero_casos_probables,
-      numero_casos_confirmados: reporte.numero_casos_confirmados,
-      numero_casos_totales: reporte.numero_casos_totales,
-      numero_hospitalizados: reporte.numero_hospitalizados,
-      fallecimientos: reporte.fallecimientos,
-      uci: reporte.numero_casos_uci,
-      periodo_incubacion: reporte.periodo_incubacion,
-      duracion_promedio_enfermedad: reporte.duracion_promedio_enfermedad,
-      signos_sintomas: reporte.signos_sintomas,
-      fecha_pid: reporte.fecha_pid,
-      fecha_upd: reporte.fecha_upd,
-      id_medida_dpi: reporte.MedidaDpi?.medida || null,
-      id_medida_dpe: reporte.MedidaDpe?.medida || null,
-      fecha_registro: reporte.fecha_registro,
-    }));
 
-    res.status(200).json(reportesFormateados);
-    // Aquí puedes enviar usuariosFormateados a donde lo necesites
+    if (reportes.length > 0) {
+      const reportesFormateados = reportes.map(reporte => ({
+        id_reporte: reporte.id_reporte,
+        usuario: reporte.Usuario?.id_usuario || null,
+        titulo: reporte.titulo,
+        descripcion: reporte.descripcion,
+        institucion_casos: reporte.institucion_casos,
+        laboratorio_confirmacion: reporte.laboratorio_confirmacion,
+        localidad: reporte.Localidad?.localidad || null,
+        estado: reporte.Localidad?.Estado?.estado || null,
+        pais: reporte.Localidad?.Estado?.Pais?.pais || null,
+        numero_casos_femeninos: reporte.numero_casos_femeninos,
+        numero_casos_masculinos: reporte.numero_casos_masculinos,
+        numero_casos_sexo_desconocido: reporte.numero_casos_sexo_desconocido,
+        longitud: reporte.longitud,
+        latitud: reporte.latitud,
+        altitud: reporte.altitud,
+        agente_causal: reporte.Agente_Causal?.agente_causal || null,
+        grupo_riesgo: reporte.Agente_Causal?.Grupo_Riesgo?.grupo_riesgo || null,
+        tipo: reporte.Agente_Causal?.Tipo_Patogeno?.tipo || null,
+        ruta_transmision: reporte.Ruta_Transmision?.ruta_transmision || null,
+        numero_casos_sospechosos: reporte.numero_casos_sospechosos,
+        numero_casos_probables: reporte.numero_casos_probables,
+        numero_casos_confirmados: reporte.numero_casos_confirmados,
+        numero_casos_totales: reporte.numero_casos_totales,
+        numero_hospitalizados: reporte.numero_hospitalizados,
+        fallecimientos: reporte.fallecimientos,
+        uci: reporte.numero_casos_uci,
+        periodo_incubacion: reporte.periodo_incubacion,
+        duracion_promedio_enfermedad: reporte.duracion_promedio_enfermedad,
+        signos_sintomas: reporte.signos_sintomas,
+        fecha_pid: reporte.fecha_pid,
+        fecha_upd: reporte.fecha_upd,
+        id_medida_dpi: reporte.MedidaDpi?.medida || null,
+        id_medida_dpe: reporte.MedidaDpe?.medida || null,
+        fecha_registro: reporte.fecha_registro,
+        estado_reporte: reporte.estado_reporte
+
+      }));
+      res.status(200).json(reportesFormateados);
+    } else {
+      res.status(404).json({ message: 'No hay reportes aceptados.' });
+    }
   } catch (error) {
-    console.error('Error al obtener reportes:', error);
-    res.status(500).json({ error: 'Error al obtener reportes' });
+    console.error('Error al obtener reportes pendientes:', error);
+    res.status(500).json({ error: 'Error al obtener los reportes pendientes.' });
   }
 };
 
 const getAllReportsinMap = async (req, res) => {
   try {
-    let rutaCondition = {};
-    let tipoConditions = {};
-    let grupoConditions = {};
-    let agenteConditions = {};
-    let estadoConditions = {};
-    let paisConditions = {};
-    const { titulo, ruta_transmision, tipo, grupo_riesgo, agente_causal, estado, pais, fecha_inicio, fecha_fin } = req.query;
-    const searchTermLowerCase1 = (titulo || '').toLowerCase(); // Convertir el término de búsqueda a minúsculas
-    if (ruta_transmision) {
-      rutaCondition = {
-        id_ruta_transmision: ruta_transmision
-      }
-    }
-    if (tipo) {
-      tipoConditions = {
-        id_tipo: tipo
-      }
-    }
-    if (grupo_riesgo) {
-      grupoConditions = {
-        id_grupo_riesgo: grupo_riesgo
-      }
-    }
-    if (agente_causal) {
-      agenteConditions = {
-        id_agente_causal: agente_causal
-      }
-    }
+    const { estado, pais, titulo, ruta_transmision, tipo, grupo_riesgo, agente_causal,fecha_inicio, fecha_fin} = req.query;
+    const searchTermLowerCase = (titulo || '').toLowerCase(); // Convertir el término de búsqueda a minúsculas
+
+    const whereEstado = {};    // Filtro para Estado
+    const wherePais = {};      // Filtro para Pais
+    const whereRuta = {};
+    const whereTipo = {};
+    const whereGrupo = {};
+    const whereAgente = {};
+
     if (estado) {
-      estadoConditions = {
-        id_estado: estado
-      }
+      whereEstado.id_estado = estado;          // Filtro por nombre de Estado
     }
     if (pais) {
-      paisConditions = {
-        id_pais: pais
-      }
+      wherePais.id_pais = pais;                // Filtro por nombre de País
     }
-    // Buscar todos los usuarios que coincidan con el nombre proporcionado (insensible a mayúsculas y minúsculas)
+    if (tipo) {
+      whereTipo.id_tipo = tipo;
+    }
+    if (grupo_riesgo) {
+      whereGrupo.id_grupo_riesgo = grupo_riesgo;
+    }
+    if (agente_causal) {
+      whereAgente.id_agente_causal = agente_causal;
+    }
+    if (ruta_transmision) {
+      whereRuta.id_ruta_transmision = ruta_transmision;
+    }
+
     const reportes = await Reporte.findAll({
       order: [['fecha_registro', 'DESC']],
       where: {
         fecha_registro: { [Op.between]: [fecha_inicio, fecha_fin] },
-        // Utilizar operadores `Op.or` para buscar en ambos casos de mayúsculas y minúsculas
         [Sequelize.Op.or]: [
           Sequelize.where(
             Sequelize.fn('LOWER', Sequelize.col('Reporte.titulo')),
             'LIKE',
-            `%${searchTermLowerCase1}%`
+            `%${searchTermLowerCase}%`
           ),
         ],
         estado_reporte: 'Activo',
         aprobado: 1,
-
       },
       include: [
-        { model: Usuario, atributes: ['id_usuario'] },
-        {
-          model: Ruta_Transmision, atributes: ['ruta_transmision'],
-          where: rutaCondition
-        },
-        {
-          model: Agente_Causal, atributes: ['agente_causal'],
-          where: agenteConditions,
-          include: [
-            {
-              model: Tipo_Patogeno, attributes: ['tipo'],
-              where: tipoConditions
-            },
-            {
-              model: Grupo_Riesgo, attributes: ['grupo_riesgo'],
-              where: grupoConditions
-            },
-          ]
-        },
         {
           model: Localidad,
           attributes: ['localidad'],
-          include: [
-            {
+          where: {
+
+          },
+          include:
+            [{
               model: Estado,
               attributes: ['estado'],
-              where: estadoConditions,
-              include: [{
-                model: Pais, attributes: ['pais'],
-                where: paisConditions
-              }],
+              where:
+                whereEstado
+              ,
+              include: [
+                {
+                  model: Pais,
+                  attributes: ['pais'],
+                  where: wherePais
+                  , as: 'Pais'
+                }
+              ]
+            }]
+        },
+        { model: Usuario, atributes: ['id_usuario'] },
+        {
+          model: Ruta_Transmision, atributes: ['ruta_transmision'],
+          where: whereRuta
+        },
+        {
+          model: Agente_Causal, atributes: ['agente_causal'],
+          where: whereAgente,
+          include: [
+            {
+              model: Tipo_Patogeno, attributes: ['tipo'],
+              where: whereTipo
             },
-          ],
+            {
+              model: Grupo_Riesgo, attributes: ['grupo_riesgo'],
+              where: whereGrupo
+            },
+          ]
         },
         {
           model: Medida_Tiempo,
@@ -692,178 +580,149 @@ const getAllReportsinMap = async (req, res) => {
           as: 'MedidaDpe',
           attributes: ['medida'],
         }
-      ],
-      attributes: [
-        'id_reporte',
-        'titulo',
-        'descripcion',
-        'institucion_casos',
-        'laboratorio_confirmacion',
-        'numero_casos_femeninos',
-        'numero_casos_masculinos',
-        'numero_casos_sexo_desconocido',
-        'longitud',
-        'latitud',
-        'altitud',
-        'fecha_pid',
-        'fecha_upd',
-        'periodo_incubacion',
-        'duracion_promedio_enfermedad',
-        'signos_sintomas',
-        'numero_casos_sospechosos',
-        'numero_casos_probables',
-        'numero_casos_confirmados',
-        'numero_casos_totales',
-        'numero_hospitalizados',
-        'fallecimientos',
-        'numero_casos_uci',
-        'aprobado',
-        'estado_reporte',
-        'fecha_registro',
-      ],
+      ]
     });
-    const reportesFormateados = reportes.map(reporte => ({
-      // Formatear los datos del reporte para la respuesta
-      id_reporte: reporte.id_reporte,
-      titulo: reporte.titulo,
-      descripcion: reporte.descripcion,
-      usuario: reporte.Usuario ? reporte.Usuario.id_usuario : null,
-      estado_reporte: reporte.estado_reporte,
-      institucion_casos: reporte.institucion_casos,
-      laboratorio_confirmacion: reporte.laboratorio_confirmacion,
-      localidad: reporte.Localidad ? reporte.Localidad.localidad : null,
-      estado: reporte.Localidad?.Estado?.estado || null,
-      pais: reporte.Localidad?.Estado?.Pai?.pais || null,
-      numero_casos_femeninos: reporte.numero_casos_femeninos,
-      numero_casos_masculinos: reporte.numero_casos_masculinos,
-      numero_casos_sexo_desconocido: reporte.numero_casos_sexo_desconocido,
-      longitud: reporte.longitud,
-      latitud: reporte.latitud,
-      altitud: reporte.altitud,
-      agente_causal: reporte.Agente_Causal ?.agente_causal || null,
-      grupo_riesgo: reporte.Agente_Causal?.Grupo_Riesgo?.grupo_riesgo || null,
-      tipo: reporte.Agente_Causal?.Tipo_Patogeno?.tipo || null,
-      ruta_transmision: reporte.Ruta_Transmision.ruta_transmision,
-      numero_casos_sospechosos: reporte.numero_casos_sospechosos,
-      numero_casos_probables: reporte.numero_casos_probables,
-      numero_casos_confirmados: reporte.numero_casos_confirmados,
-      numero_casos_totales: reporte.numero_casos_totales,
-      numero_hospitalizados: reporte.numero_hospitalizados,
-      fallecimientos: reporte.fallecimientos,
-      uci: reporte.numero_casos_uci,
-      periodo_incubacion: reporte.periodo_incubacion,
-      duracion_promedio_enfermedad: reporte.duracion_promedio_enfermedad,
-      signos_sintomas: reporte.signos_sintomas,
-      fecha_pid: reporte.fecha_pid,
-      fecha_upd: reporte.fecha_upd,
-      id_medida_dpi: reporte.MedidaDpi?.medida || null,
-      id_medida_dpe: reporte.MedidaDpe?.medida || null,
-      fecha_registro: reporte.fecha_registro,
-    }));
 
-    res.status(200).json(reportesFormateados);
-    // Aquí puedes enviar usuariosFormateados a donde lo necesites
+    if (reportes.length > 0) {
+      const reportesFormateados = reportes.map(reporte => ({
+        id_reporte: reporte.id_reporte,
+        usuario: reporte.Usuario?.id_usuario || null,
+        titulo: reporte.titulo,
+        descripcion: reporte.descripcion,
+        institucion_casos: reporte.institucion_casos,
+        laboratorio_confirmacion: reporte.laboratorio_confirmacion,
+        localidad: reporte.Localidad?.localidad || null,
+        estado: reporte.Localidad?.Estado?.estado || null,
+        pais: reporte.Localidad?.Estado?.Pais?.pais || null,
+        numero_casos_femeninos: reporte.numero_casos_femeninos,
+        numero_casos_masculinos: reporte.numero_casos_masculinos,
+        numero_casos_sexo_desconocido: reporte.numero_casos_sexo_desconocido,
+        longitud: reporte.longitud,
+        latitud: reporte.latitud,
+        altitud: reporte.altitud,
+        agente_causal: reporte.Agente_Causal?.agente_causal || null,
+        grupo_riesgo: reporte.Agente_Causal?.Grupo_Riesgo?.grupo_riesgo || null,
+        tipo: reporte.Agente_Causal?.Tipo_Patogeno?.tipo || null,
+        ruta_transmision: reporte.Ruta_Transmision?.ruta_transmision || null,
+        numero_casos_sospechosos: reporte.numero_casos_sospechosos,
+        numero_casos_probables: reporte.numero_casos_probables,
+        numero_casos_confirmados: reporte.numero_casos_confirmados,
+        numero_casos_totales: reporte.numero_casos_totales,
+        numero_hospitalizados: reporte.numero_hospitalizados,
+        fallecimientos: reporte.fallecimientos,
+        uci: reporte.numero_casos_uci,
+        periodo_incubacion: reporte.periodo_incubacion,
+        duracion_promedio_enfermedad: reporte.duracion_promedio_enfermedad,
+        signos_sintomas: reporte.signos_sintomas,
+        fecha_pid: reporte.fecha_pid,
+        fecha_upd: reporte.fecha_upd,
+        id_medida_dpi: reporte.MedidaDpi?.medida || null,
+        id_medida_dpe: reporte.MedidaDpe?.medida || null,
+        fecha_registro: reporte.fecha_registro,
+        estado_reporte: reporte.estado_reporte
+
+      }));
+      res.status(200).json(reportesFormateados);
+    } else {
+      res.status(404).json({ message: 'No hay reportes.' });
+    }
   } catch (error) {
-    console.error('Error al obtener reportes:', error);
-    res.status(500).json({ error: 'Error al obtener reportes' });
+    console.error('Error al obtener reportes pendientes:', error);
+    res.status(500).json({ error: 'Error al obtener los reportes pendientes.' });
   }
 };
 
 const getByIdUsuario = async (req, res) => {
   const { id } = req.params;
   try {
-    let rutaCondition = {};
-    let tipoConditions = {};
-    let grupoConditions = {};
-    let agenteConditions = {};
-    let estadoConditions = {};
-    let paisConditions = {};
-    const { titulo, ruta_transmision, tipo, grupo_riesgo, agente_causal, estado, pais } = req.query;
-    const searchTermLowerCase1 = (titulo || '').toLowerCase(); // Convertir el término de búsqueda a minúsculas
-    usuarioConditions = {id_usuario: id}
-    if (ruta_transmision) {
-      rutaCondition = {
-        id_ruta_transmision: ruta_transmision
-      }
-    }
-    if (tipo) {
-      tipoConditions = {
-        id_tipo: tipo
-      }
-    }
-    if (grupo_riesgo) {
-      grupoConditions = {
-        id_grupo_riesgo: grupo_riesgo
-      }
-    }
-    if (agente_causal) {
-      agenteConditions = {
-        id_agente_causal: agente_causal
-      }
-    }
+    const { estado, pais, titulo, ruta_transmision, tipo, grupo_riesgo, agente_causal } = req.query;
+    const searchTermLowerCase = (titulo || '').toLowerCase(); // Convertir el término de búsqueda a minúsculas
+
+    const whereEstado = {};    // Filtro para Estado
+    const wherePais = {};      // Filtro para Pais
+    const whereRuta = {};
+    const whereTipo = {};
+    const whereGrupo = {};
+    const whereAgente = {};
+
+    const whereUsuario = { id_usuario: id };
+
     if (estado) {
-      estadoConditions = {
-        id_estado: estado
-      }
+      whereEstado.id_estado = estado;          // Filtro por nombre de Estado
     }
     if (pais) {
-      paisConditions = {
-        id_pais: pais
-      }
+      wherePais.id_pais = pais;                // Filtro por nombre de País
+    }
+    if (tipo) {
+      whereTipo.id_tipo = tipo;
+    }
+    if (grupo_riesgo) {
+      whereGrupo.id_grupo_riesgo = grupo_riesgo;
+    }
+    if (agente_causal) {
+      whereAgente.id_agente_causal = agente_causal;
+    }
+    if (ruta_transmision) {
+      whereRuta.id_ruta_transmision = ruta_transmision;
     }
 
-    // Buscar todos los usuarios que coincidan con el nombre proporcionado (insensible a mayúsculas y minúsculas)
     const reportes = await Reporte.findAll({
       order: [['fecha_registro', 'DESC']],
       where: {
-        // Utilizar operadores `Op.or` para buscar en ambos casos de mayúsculas y minúsculas
         [Sequelize.Op.or]: [
           Sequelize.where(
             Sequelize.fn('LOWER', Sequelize.col('Reporte.titulo')),
             'LIKE',
-            `%${searchTermLowerCase1}%`
+            `%${searchTermLowerCase}%`
           ),
         ],
-        aprobado: 1
+        aprobado: 1,
       },
       include: [
         {
+          model: Localidad,
+          attributes: ['localidad'],
+          where: {
+
+          },
+          include:
+            [{
+              model: Estado,
+              attributes: ['estado'],
+              where:
+                whereEstado
+              ,
+              include: [
+                {
+                  model: Pais,
+                  attributes: ['pais'],
+                  where: wherePais,
+                  as: 'Pais'
+                }
+              ]
+            }]
+        },
+        {
           model: Usuario, atributes: ['id_usuario'],
-          where: usuarioConditions,
+          where: whereUsuario
         },
         {
           model: Ruta_Transmision, atributes: ['ruta_transmision'],
-          where: rutaCondition
+          where: whereRuta
         },
         {
           model: Agente_Causal, atributes: ['agente_causal'],
-          where: agenteConditions,
+          where: whereAgente,
           include: [
             {
               model: Tipo_Patogeno, attributes: ['tipo'],
-              where: tipoConditions
-
+              where: whereTipo
             },
             {
               model: Grupo_Riesgo, attributes: ['grupo_riesgo'],
-              where: grupoConditions
+              where: whereGrupo
             },
           ]
-        },
-        {
-          model: Localidad,
-          attributes: ['localidad'],
-          include: [
-            {
-              model: Estado,
-              attributes: ['estado'],
-              where: estadoConditions,
-              include: [{
-                model: Pais, attributes: ['pais'],
-                where: paisConditions
-              }],
-            },
-          ],
         },
         {
           model: Medida_Tiempo,
@@ -875,80 +734,55 @@ const getByIdUsuario = async (req, res) => {
           as: 'MedidaDpe',
           attributes: ['medida'],
         }
-      ],
-      attributes: [
-        'id_reporte',
-        'titulo',
-        'descripcion',
-        'institucion_casos',
-        'laboratorio_confirmacion',
-        'numero_casos_femeninos',
-        'numero_casos_masculinos',
-        'numero_casos_sexo_desconocido',
-        'longitud',
-        'latitud',
-        'altitud',
-        'fecha_pid',
-        'fecha_upd',
-        'periodo_incubacion',
-        'duracion_promedio_enfermedad',
-        'signos_sintomas',
-        'numero_casos_sospechosos',
-        'numero_casos_probables',
-        'numero_casos_confirmados',
-        'numero_casos_totales',
-        'numero_hospitalizados',
-        'fallecimientos',
-        'numero_casos_uci',
-        'aprobado',
-        'estado_reporte',
-        'fecha_registro',
-      ],
+      ]
     });
-    const reportesFormateados = reportes.map(reporte => ({
-      // Formatear los datos del reporte para la respuesta
-      id_reporte: reporte.id_reporte,
-      titulo: reporte.titulo,
-      descripcion: reporte.descripcion,
-      usuario: reporte.Usuario ? reporte.Usuario.id_usuario : null,
-      estado_reporte: reporte.estado_reporte,
-      institucion_casos: reporte.institucion_casos,
-      laboratorio_confirmacion: reporte.laboratorio_confirmacion,
-      localidad: reporte.Localidad ? reporte.Localidad.localidad : null,
-      estado: reporte.Localidad?.Estado?.estado || null,
-      pais: reporte.Localidad?.Estado?.Pai?.pais || null,
-      numero_casos_femeninos: reporte.numero_casos_femeninos,
-      numero_casos_masculinos: reporte.numero_casos_masculinos,
-      numero_casos_sexo_desconocido: reporte.numero_casos_sexo_desconocido,
-      longitud: reporte.longitud,
-      latitud: reporte.latitud,
-      altitud: reporte.altitud,
-      agente_causal: reporte.Agente_Causal ?.agente_causal || null,
-      grupo_riesgo: reporte.Agente_Causal?.Grupo_Riesgo?.grupo_riesgo || null,
-      tipo: reporte.Agente_Causal?.Tipo_Patogeno?.tipo || null,
-      ruta_transmision: reporte.Ruta_Transmision.ruta_transmision,
-      numero_casos_sospechosos: reporte.numero_casos_sospechosos,
-      numero_casos_probables: reporte.numero_casos_probables,
-      numero_casos_confirmados: reporte.numero_casos_confirmados,
-      numero_casos_totales: reporte.numero_casos_totales,
-      numero_hospitalizados: reporte.numero_hospitalizados,
-      fallecimientos: reporte.fallecimientos,
-      uci: reporte.numero_casos_uci,
-      periodo_incubacion: reporte.periodo_incubacion,
-      duracion_promedio_enfermedad: reporte.duracion_promedio_enfermedad,
-      signos_sintomas: reporte.signos_sintomas,
-      fecha_pid: reporte.fecha_pid,
-      fecha_upd: reporte.fecha_upd,
-      id_medida_dpi: reporte.MedidaDpi?.medida || null,
-      id_medida_dpe: reporte.MedidaDpe?.medida || null,
-      fecha_registro: reporte.fecha_registro,
-    }));
 
-    res.status(200).json(reportesFormateados);
-    // Aquí puedes enviar usuariosFormateados a donde lo necesites
+    if (reportes.length > 0) {
+      const reportesFormateados = reportes.map(reporte => ({
+        id_reporte: reporte.id_reporte,
+        usuario: reporte.Usuario?.id_usuario || null,
+        titulo: reporte.titulo,
+        descripcion: reporte.descripcion,
+        institucion_casos: reporte.institucion_casos,
+        laboratorio_confirmacion: reporte.laboratorio_confirmacion,
+        localidad: reporte.Localidad?.localidad || null,
+        estado: reporte.Localidad?.Estado?.estado || null,
+        pais: reporte.Localidad?.Estado?.Pais?.pais || null,
+        numero_casos_femeninos: reporte.numero_casos_femeninos,
+        numero_casos_masculinos: reporte.numero_casos_masculinos,
+        numero_casos_sexo_desconocido: reporte.numero_casos_sexo_desconocido,
+        longitud: reporte.longitud,
+        latitud: reporte.latitud,
+        altitud: reporte.altitud,
+        agente_causal: reporte.Agente_Causal?.agente_causal || null,
+        grupo_riesgo: reporte.Agente_Causal?.Grupo_Riesgo?.grupo_riesgo || null,
+        tipo: reporte.Agente_Causal?.Tipo_Patogeno?.tipo || null,
+        ruta_transmision: reporte.Ruta_Transmision?.ruta_transmision || null,
+        numero_casos_sospechosos: reporte.numero_casos_sospechosos,
+        numero_casos_probables: reporte.numero_casos_probables,
+        numero_casos_confirmados: reporte.numero_casos_confirmados,
+        numero_casos_totales: reporte.numero_casos_totales,
+        numero_hospitalizados: reporte.numero_hospitalizados,
+        fallecimientos: reporte.fallecimientos,
+        uci: reporte.numero_casos_uci,
+        periodo_incubacion: reporte.periodo_incubacion,
+        duracion_promedio_enfermedad: reporte.duracion_promedio_enfermedad,
+        signos_sintomas: reporte.signos_sintomas,
+        fecha_pid: reporte.fecha_pid,
+        fecha_upd: reporte.fecha_upd,
+        id_medida_dpi: reporte.MedidaDpi?.medida || null,
+        id_medida_dpe: reporte.MedidaDpe?.medida || null,
+        fecha_registro: reporte.fecha_registro,
+        estado_reporte: reporte.estado_reporte
+
+      }));
+      res.status(200).json(reportesFormateados);
+    } else {
+      res.status(404).json({ message: 'No hay reportes activos.' });
+    }
   } catch (error) {
-    console.error('Error al obtener reportes:', error);
-    res.status(500).json({ error: 'Error al obtener reportes' });
+    console.error('Error al obtener reportes pendientes:', error);
+    res.status(500).json({ error: 'Error al obtener los reportes pendientes.' });
   }
 };
 
