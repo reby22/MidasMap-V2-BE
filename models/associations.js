@@ -708,7 +708,7 @@ Reporte.belongsTo(Usuario, { foreignKey: 'id_usuario' ,targetKey: 'id_usuario'})
 Reporte.belongsTo(Medida_Tiempo, { foreignKey: 'id_medida_dpi' ,targetKey: 'id_medida', as: 'MedidaDpi'});
 Reporte.belongsTo(Medida_Tiempo, { foreignKey: 'id_medida_dpe' ,targetKey: 'id_medida',as: 'MedidaDpe'});
 Localidad.belongsTo(Estado, { foreignKey: 'id_estado',targetKey: 'id_estado'});
-Estado.belongsTo(Pais, { foreignKey: 'id_pais',targetKey: 'id_pais'});
+Estado.belongsTo(Pais, { foreignKey: 'id_pais',targetKey: 'id_pais', as:'Pais'});
 
 //Paises
 Estado.hasMany(Localidad, { foreignKey: 'id_estado',sourceKey: 'id_estado', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
