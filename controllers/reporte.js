@@ -1,4 +1,4 @@
-const { Reporte, Agente_Causal, Ruta_Transmision, Estado, Localidad, Pais, Tipo_Patogeno, Grupo_Riesgo, Usuario, Medida_Tiempo } = require('../models/associations');
+const { Reporte, Agente_Causal, Ruta_Transmision, Estado, Localidad, Pais, Tipo_Patogeno, Grupo_Riesgo, Usuario, Medida_Tiempo, Pais_Region, Region } = require('../models/associations');
 const Sequelize = require('sequelize');
 const { Op } = require('sequelize');
 
@@ -188,7 +188,7 @@ const update = async (req, res) => {
 
 const getAllReportsPendientes = async (req, res) => {
   try {
-    const { estado, pais, titulo, ruta_transmision, tipo, grupo_riesgo, agente_causal } = req.query;
+    const { region, estado, pais, titulo, ruta_transmision, tipo, grupo_riesgo, agente_causal } = req.query;
     const searchTermLowerCase = (titulo || '').toLowerCase(); // Convertir el término de búsqueda a minúsculas
 
     const whereEstado = {};    // Filtro para Estado
@@ -197,7 +197,11 @@ const getAllReportsPendientes = async (req, res) => {
     const whereTipo = {};
     const whereGrupo = {};
     const whereAgente = {};
+    const whereRegion = {};
 
+    if (region) {
+      whereRegion.id_region = region;          // Filtro por nombre de Estado
+    }
     if (estado) {
       whereEstado.id_estado = estado;          // Filtro por nombre de Estado
     }
@@ -233,9 +237,6 @@ const getAllReportsPendientes = async (req, res) => {
         {
           model: Localidad,
           attributes: ['localidad'],
-          where: {
-
-          },
           include:
             [{
               model: Estado,
@@ -336,7 +337,7 @@ const getAllReportsPendientes = async (req, res) => {
 
 const getAllReportsAceptados = async (req, res) => {
   try {
-    const { estado, pais, titulo, ruta_transmision, tipo, grupo_riesgo, agente_causal } = req.query;
+    const { region, estado, pais, titulo, ruta_transmision, tipo, grupo_riesgo, agente_causal } = req.query;
     const searchTermLowerCase = (titulo || '').toLowerCase(); // Convertir el término de búsqueda a minúsculas
 
     const whereEstado = {};    // Filtro para Estado
@@ -345,7 +346,11 @@ const getAllReportsAceptados = async (req, res) => {
     const whereTipo = {};
     const whereGrupo = {};
     const whereAgente = {};
+    const whereRegion = {};
 
+    if (region) {
+      whereRegion.id_region = region;          // Filtro por nombre de Estado
+    }
     if (estado) {
       whereEstado.id_estado = estado;          // Filtro por nombre de Estado
     }
@@ -381,9 +386,6 @@ const getAllReportsAceptados = async (req, res) => {
         {
           model: Localidad,
           attributes: ['localidad'],
-          where: {
-
-          },
           include:
             [{
               model: Estado,
@@ -395,8 +397,21 @@ const getAllReportsAceptados = async (req, res) => {
                 {
                   model: Pais,
                   attributes: ['pais'],
-                  where: wherePais
-                  , as: 'Pais'
+                  where: wherePais,
+                  include: [
+                    {
+                      model: Pais_Region,    
+                      attributes: [],
+                      where: whereRegion,    
+                      include: [
+                        {
+                          model: Region,      
+                          attributes: ['region'], 
+                        }
+                      ]
+                    }
+                  ],
+                  as: 'Pais'
                 }
               ]
             }]
@@ -484,7 +499,7 @@ const getAllReportsAceptados = async (req, res) => {
 
 const getAllReportsinMap = async (req, res) => {
   try {
-    const { estado, pais, titulo, ruta_transmision, tipo, grupo_riesgo, agente_causal,fecha_inicio, fecha_fin} = req.query;
+    const { region, estado, pais, titulo, ruta_transmision, tipo, grupo_riesgo, agente_causal, fecha_inicio, fecha_fin } = req.query;
     const searchTermLowerCase = (titulo || '').toLowerCase(); // Convertir el término de búsqueda a minúsculas
 
     const whereEstado = {};    // Filtro para Estado
@@ -493,7 +508,11 @@ const getAllReportsinMap = async (req, res) => {
     const whereTipo = {};
     const whereGrupo = {};
     const whereAgente = {};
+    const whereRegion = {};
 
+    if (region) {
+      whereRegion.id_region = region;          // Filtro por nombre de Estado
+    }
     if (estado) {
       whereEstado.id_estado = estado;          // Filtro por nombre de Estado
     }
@@ -531,9 +550,6 @@ const getAllReportsinMap = async (req, res) => {
         {
           model: Localidad,
           attributes: ['localidad'],
-          where: {
-
-          },
           include:
             [{
               model: Estado,
@@ -635,7 +651,7 @@ const getAllReportsinMap = async (req, res) => {
 const getByIdUsuario = async (req, res) => {
   const { id } = req.params;
   try {
-    const { estado, pais, titulo, ruta_transmision, tipo, grupo_riesgo, agente_causal } = req.query;
+    const { region, estado, pais, titulo, ruta_transmision, tipo, grupo_riesgo, agente_causal } = req.query;
     const searchTermLowerCase = (titulo || '').toLowerCase(); // Convertir el término de búsqueda a minúsculas
 
     const whereEstado = {};    // Filtro para Estado
@@ -644,9 +660,13 @@ const getByIdUsuario = async (req, res) => {
     const whereTipo = {};
     const whereGrupo = {};
     const whereAgente = {};
+    const whereRegion = {};
 
     const whereUsuario = { id_usuario: id };
 
+    if (region) {
+      whereRegion.id_region = region;          // Filtro por nombre de Estado
+    }
     if (estado) {
       whereEstado.id_estado = estado;          // Filtro por nombre de Estado
     }
@@ -682,9 +702,6 @@ const getByIdUsuario = async (req, res) => {
         {
           model: Localidad,
           attributes: ['localidad'],
-          where: {
-
-          },
           include:
             [{
               model: Estado,

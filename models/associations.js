@@ -1,6 +1,27 @@
 const { DataTypes, ForeignKeyConstraintError } = require('sequelize');
 const { sequelize } = require('../config/dbConnection');
 
+const Region = sequelize.define(
+  'Region',
+  {
+    id_region: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+      primaryKey: true,
+      autoIncrement: false,
+    },
+    region: {
+      type: DataTypes.STRING(40),
+      allowNull: false
+    },
+  },
+  {
+    // Other model options go here
+    tableName: 'regiones',
+    timestamps: false
+  },
+);
+
 const Pais = sequelize.define(
   'Pais',
   {
@@ -20,6 +41,30 @@ const Pais = sequelize.define(
   {
     // Other model options go here
     tableName: 'paises',
+    timestamps: false
+  },
+);
+
+const Pais_Region = sequelize.define(
+  'Pais_Region',
+  {
+    // Model attributes are defined here
+    id_pais: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+      primaryKey: true,
+      autoIncrement: false,
+    },
+    id_region: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+      primaryKey: true,
+      autoIncrement: false,
+    },
+  },
+  {
+    // Other model options go here
+    tableName: 'paises_region',
     timestamps: false
   },
 );
@@ -709,6 +754,8 @@ Reporte.belongsTo(Medida_Tiempo, { foreignKey: 'id_medida_dpi' ,targetKey: 'id_m
 Reporte.belongsTo(Medida_Tiempo, { foreignKey: 'id_medida_dpe' ,targetKey: 'id_medida',as: 'MedidaDpe'});
 Localidad.belongsTo(Estado, { foreignKey: 'id_estado',targetKey: 'id_estado'});
 Estado.belongsTo(Pais, { foreignKey: 'id_pais',targetKey: 'id_pais', as:'Pais'});
+Pais_Region.belongsTo(Pais, { foreignKey: 'id_pais',targetKey: 'id_pais', as:'Pais'});
+Pais_Region.belongsTo(Region, { foreignKey: 'id_region',targetKey: 'id_region'});
 
 //Paises
 Estado.hasMany(Localidad, { foreignKey: 'id_estado',sourceKey: 'id_estado', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
@@ -737,6 +784,8 @@ Medida_Tiempo.hasMany(Reporte, {foreignKey: 'id_medida_dpi',sourceKey: 'id_medid
 Medida_Tiempo.hasMany(Reporte, {foreignKey: 'id_medida_dpe',sourceKey: 'id_medida'});
 Usuario.hasMany(Reporte, { foreignKey: 'id_usuario',sourceKey: 'id_usuario', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 Localidad.hasMany(Reporte, {foreignKey: 'id_ubicacion',sourceKey: 'id_localidad',onDelete: 'CASCADE', onUpdate: 'CASCADE'});
+Pais.hasMany(Pais_Region, {foreignKey: 'id_pais',sourceKey: 'id_pais'});
+Region.hasMany(Pais_Region, {foreignKey: 'id_region',sourceKey: 'id_region'});
 
 sequelize.sync({ alter: true }).then(() => {
   console.log("DB creada, Todo funciona Bien")
@@ -744,4 +793,4 @@ sequelize.sync({ alter: true }).then(() => {
   console.log(error);
 })
 
-module.exports = { Pais, Estado, Titulo, Licenciatura, Grado, Rol, Usuario, Localidad, Reporte, Grupo_Riesgo, Tipo_Patogeno, Agente_Causal, Ruta_Transmision, Medida_Tiempo, Control_usuario, Notificacion, Tipo_Notificacion, Riesgo }
+module.exports = { Region, Pais,Pais_Region, Estado, Titulo, Licenciatura, Grado, Rol, Usuario, Localidad, Reporte, Grupo_Riesgo, Tipo_Patogeno, Agente_Causal, Ruta_Transmision, Medida_Tiempo, Control_usuario, Notificacion, Tipo_Notificacion, Riesgo }

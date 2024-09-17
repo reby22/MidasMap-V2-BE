@@ -6,7 +6,7 @@ const express = require("express");
 const cors = require("cors"); 
 var env = require('dotenv'); 
 const {dbConnection} = require('./config/dbConnection');
-const {Localidad, Estado, Pais, Titulo, Licenciatura, Grado, Rol, Usuario} = require('./models/associations');
+const {Localidad, Estado, Pais, Titulo, Licenciatura, Grado, Rol, Usuario, Region} = require('./models/associations');
 
 
 class Server {
@@ -38,6 +38,7 @@ class Server {
         this.transmisionesPath = "/api/transmisiones";
         this.patogenosPath = "/api/patogenos";
         this.medidasPath = "/api/medidasTiempo";
+        this.regionesPath = "/api/regiones";
 
 
 
@@ -65,6 +66,7 @@ class Server {
         this.app.use(this.transmisionesPath, require("./routes/ruta_transmision"));
         this.app.use(this.patogenosPath, require("./routes/tipo_patogeno"));
         this.app.use(this.medidasPath, require("./routes/medida_tiempo"));
+        this.app.use(this.regionesPath, require("./routes/region"));
 
         this.app.get("*", (req, res) => {
             res.status(404).send("Error - ruta no encontrada");
