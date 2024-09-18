@@ -237,6 +237,7 @@ const getAllReportsPendientes = async (req, res) => {
         {
           model: Localidad,
           attributes: ['localidad'],
+          where:{},
           include:
             [{
               model: Estado,
@@ -248,8 +249,21 @@ const getAllReportsPendientes = async (req, res) => {
                 {
                   model: Pais,
                   attributes: ['pais'],
-                  where: wherePais
-                  , as: 'Pais'
+                  where: wherePais,
+                  include: [
+                    {
+                      model: Pais_Region,    
+                      attributes: [],    
+                      include: [
+                        {
+                          model: Region,      
+                          attributes: ['region'], 
+                          where:whereRegion,
+                        }
+                      ]
+                    }
+                  ],
+                  as: 'Pais'
                 }
               ]
             }]
@@ -386,6 +400,7 @@ const getAllReportsAceptados = async (req, res) => {
         {
           model: Localidad,
           attributes: ['localidad'],
+          where:{},
           include:
             [{
               model: Estado,
@@ -401,12 +416,12 @@ const getAllReportsAceptados = async (req, res) => {
                   include: [
                     {
                       model: Pais_Region,    
-                      attributes: [],
-                      where: whereRegion,    
+                      attributes: [],    
                       include: [
                         {
                           model: Region,      
                           attributes: ['region'], 
+                          where:whereRegion,
                         }
                       ]
                     }
@@ -550,6 +565,7 @@ const getAllReportsinMap = async (req, res) => {
         {
           model: Localidad,
           attributes: ['localidad'],
+          where:{},
           include:
             [{
               model: Estado,
@@ -561,8 +577,21 @@ const getAllReportsinMap = async (req, res) => {
                 {
                   model: Pais,
                   attributes: ['pais'],
-                  where: wherePais
-                  , as: 'Pais'
+                  where: wherePais,
+                  include: [
+                    {
+                      model: Pais_Region,    
+                      attributes: [],    
+                      include: [
+                        {
+                          model: Region,      
+                          attributes: ['region'], 
+                          where:whereRegion,
+                        }
+                      ]
+                    }
+                  ],
+                  as: 'Pais'
                 }
               ]
             }]
@@ -702,6 +731,7 @@ const getByIdUsuario = async (req, res) => {
         {
           model: Localidad,
           attributes: ['localidad'],
+          where:{},
           include:
             [{
               model: Estado,
@@ -714,6 +744,19 @@ const getByIdUsuario = async (req, res) => {
                   model: Pais,
                   attributes: ['pais'],
                   where: wherePais,
+                  include: [
+                    {
+                      model: Pais_Region,    
+                      attributes: [],    
+                      include: [
+                        {
+                          model: Region,      
+                          attributes: ['region'], 
+                          where:whereRegion,
+                        }
+                      ]
+                    }
+                  ],
                   as: 'Pais'
                 }
               ]
