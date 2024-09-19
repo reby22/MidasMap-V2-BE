@@ -12,7 +12,6 @@ module.exports = {
       for(let j=values[i][0]; j<=values[i][1];  j++){
         id++;
         data.push({
-          id_pais_region: id,
           id_region: i + 1,
           id_pais: j,
         });
