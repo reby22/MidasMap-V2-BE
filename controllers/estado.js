@@ -1,4 +1,4 @@
-const { Estado } = require('../models/associations');
+const { Estado, Pais } = require('../models/associations');
 
 const create = async (req, res) => {
   try {
@@ -65,8 +65,41 @@ const getById = async (req, res) => {
   }
 };
 
+const getByPais = async (req, res) => {
+  try {
+    const wherePais = {};
+    const { id } = req.params;
+    wherePais.id_pais = id;
+    const estados = await Estado.findAll({
+      order: [['estado', 'ASC']],
+      where: {},
+      include: [
+        {
+          model: Pais,
+          attributes: [],
+          where: wherePais,
+          as: 'Pais'
+        }]
+    });
+
+    if (estados.length > 0) {
+      const estadosFormateados = estados.map(estado => ({
+        id_estado: estado.id_estado,
+        estado: estado.estado
+      }));
+      res.status(200).json(estadosFormateados);
+    } else {
+      res.status(404).json({ message: 'No hay Estados' });
+    }
+  } catch (error) {
+    console.error('Error al obtener Estados:', error);
+    res.status(500).json({ mensaje: 'Error interno del servidor' });
+  }
+};
+
 module.exports = {
   create,
   getById,
-  getAll
+  getAll,
+  getByPais
 };

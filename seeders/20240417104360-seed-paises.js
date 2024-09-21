@@ -5,7 +5,7 @@ const faker = require('faker');
 module.exports = {
     async up(queryInterface, Sequelize) {
         const data = [];
-        const nombres = ['Argentina',' Bolivia',' Brasil ','Canadá',' Chile',' Colombia',' Costa Rica',' Cuba',' Ecuador',' El Salvador',' Estados Unidos',' Groenlandia',' Guatemala',' Guyana Honduras',' México',' Nicaragua',' Panamá',' Paraguay',' Perú',' República Dominicana',' Surinam ','Uruguay',' Venezuela'];
+        const nombres = ['Argentina','Bolivia','Brasil','Canadá','Chile','Colombia','Costa Rica','Cuba','Ecuador','El Salvador','Estados Unidos','Groenlandia','Guatemala','Guyana Honduras','México','Nicaragua','Panamá','Paraguay','Perú','República Dominicana','Surinam ','Uruguay','Venezuela'];
 
         for (let i = 0; i < nombres.length; i++) {
             data.push({
