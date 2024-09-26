@@ -341,7 +341,7 @@ const getAllReportsPendientes = async (req, res) => {
       }));
       res.status(200).json(reportesFormateados);
     } else {
-      res.status(404).json({ message: 'No hay reportes pendientes.' });
+      res.status(204).json(reportes);
     }
   } catch (error) {
     console.error('Error al obtener reportes pendientes:', error);
@@ -504,7 +504,7 @@ const getAllReportsAceptados = async (req, res) => {
       }));
       res.status(200).json(reportesFormateados);
     } else {
-      res.status(404).json({ message: 'No hay reportes aceptados.' });
+      res.status(204).json(reportes);
     }
   } catch (error) {
     console.error('Error al obtener reportes pendientes:', error);
@@ -669,7 +669,8 @@ const getAllReportsinMap = async (req, res) => {
       }));
       res.status(200).json(reportesFormateados);
     } else {
-      res.status(404).json({ message: 'No hay reportes.' });
+      res.status(204).json(reportes);
+      return res.status(200).json(reportes);
     }
   } catch (error) {
     console.error('Error al obtener reportes pendientes:', error);
@@ -838,7 +839,7 @@ const getByIdUsuario = async (req, res) => {
       }));
       res.status(200).json(reportesFormateados);
     } else {
-      res.status(404).json({ message: 'No hay reportes activos.' });
+      res.status(204).json(reportes);
     }
   } catch (error) {
     console.error('Error al obtener reportes pendientes:', error);
