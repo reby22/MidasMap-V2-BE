@@ -107,39 +107,6 @@ const destroy = async (req, res) => {
   }
 };
 
-
-
-const getAll = async (req, res) => {
-  Notificacion.findAll({
-    include: [
-      { model: Usuario, atributes: ['id_usuario'] },
-      { model: Tipo_Notificacion, atributes: ['id_tipo'] },
-      { model: Riesgo, atributes: ['id_riesgo'] }
-    ],
-    atributes: [
-      'id_notificacion',
-      'fecha_inicio',
-      'fecha_fin',
-      'ubicacion',
-      'descripcion'
-    ]
-  }).then(notificacions => {
-    const notificacionsFormateados = notificacions.map(notificacion => ({
-      id_notificacion: notificacion.id_notificacion,
-      fecha_inicio: notificacion.fecha_inicio,
-      fecha_fin: notificacion.fecha_fin,
-      ubicacion: notificacion.ubicacion,
-      descripcion: notificacion.descripcion,
-      administrador: notificacion.Usuario ? notificacion.Usuario.id_usuario : null,
-      tipo: notificacion.Tipo_Notificacion ? notificacion.Tipo_Notificacion.tipo : null,
-      riesgo: notificacion.Riesgo ? notificacion.Riesgo.riesgo : null,
-    }));
-    res.status(200).json(notificacionsFormateados);
-  }).catch(error => {
-    console.error('Error al obtener notificacions:', error);
-  });
-}
-
 const getById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -155,14 +122,14 @@ const getById = async (req, res) => {
   }
 };
 
-const search = async (req, res) => {
+const getAll = async (req, res) => {
   try {
 
     let typeCondition = {};
     let riskCondition = {};
     const searchTerm = (req.query.termino || '').toLowerCase();
-    const searchType = req.query.tipo;
-    const searchRisk = req.query.riesgo;
+    const searchType = req.query.tipo; //tipo de notificacion
+    const searchRisk = req.query.riesgo; //riesgo
     const searchStartDate = req.query.fecha_inicio;
     const searchEndingDate = req.query.fecha_fin;
 
@@ -182,11 +149,11 @@ const search = async (req, res) => {
     };
 
     if (searchType) {
-      typeCondition = { tipo: searchType }// Si id_tipo es un valor exacto
+      typeCondition = { id_tipo: searchType }// Si id_tipo es un valor exacto
     }
 
     if (searchRisk) {
-      riskCondition = { riesgo: searchRisk }// Si id_riesgo es un valor exacto
+      riskCondition = { id_riesgo: searchRisk }// Si id_riesgo es un valor exacto
     }
 
     if (searchStartDate) {
@@ -227,7 +194,7 @@ const search = async (req, res) => {
       ubicacion: notificacion.ubicacion,
       descripcion: notificacion.descripcion,
       administrador: notificacion.Usuario ? notificacion.Usuario.id_usuario : null,
-      tipo: notificacion.Tipo_Alertum ? notificacion.Tipo_Alertum.tipo : null,
+      tipo: notificacion.Tipo_Notificacion ? notificacion.Tipo_Notificacion.tipo : null,
       riesgo: notificacion.Riesgo ? notificacion.Riesgo.riesgo : null,
     }));
     res.status(200).json(notificacionsFormateados);
@@ -243,7 +210,6 @@ module.exports = {
   create,
   getById,
   getAll,
-  search,
   update,
   destroy
 };
