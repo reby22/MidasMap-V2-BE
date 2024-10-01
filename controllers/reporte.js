@@ -237,7 +237,7 @@ const getAllReportsPendientes = async (req, res) => {
         {
           model: Localidad,
           attributes: ['localidad'],
-          where:{},
+          where: {},
           include:
             [{
               model: Estado,
@@ -252,13 +252,13 @@ const getAllReportsPendientes = async (req, res) => {
                   where: wherePais,
                   include: [
                     {
-                      model: Pais_Region,    
-                      attributes: [],    
+                      model: Pais_Region,
+                      attributes: [],
                       include: [
                         {
-                          model: Region,      
-                          attributes: ['region'], 
-                          where:whereRegion,
+                          model: Region,
+                          attributes: ['region'],
+                          where: whereRegion,
                         }
                       ]
                     }
@@ -400,7 +400,7 @@ const getAllReportsAceptados = async (req, res) => {
         {
           model: Localidad,
           attributes: ['localidad'],
-          where:{},
+          where: {},
           include:
             [{
               model: Estado,
@@ -415,13 +415,13 @@ const getAllReportsAceptados = async (req, res) => {
                   where: wherePais,
                   include: [
                     {
-                      model: Pais_Region,    
-                      attributes: [],    
+                      model: Pais_Region,
+                      attributes: [],
                       include: [
                         {
-                          model: Region,      
-                          attributes: ['region'], 
-                          where:whereRegion,
+                          model: Region,
+                          attributes: ['region'],
+                          where: whereRegion,
                         }
                       ]
                     }
@@ -580,13 +580,13 @@ const getAllReportsinMap = async (req, res) => {
                   where: wherePais,
                   include: [
                     {
-                      model: Pais_Region,    
-                      attributes: [],    
+                      model: Pais_Region,
+                      attributes: [],
                       include: [
                         {
-                          model: Region,      
-                          attributes: ['region'], 
-                          where:whereRegion,
+                          model: Region,
+                          attributes: ['region'],
+                          where: whereRegion,
                         }
                       ]
                     }
@@ -670,7 +670,6 @@ const getAllReportsinMap = async (req, res) => {
       res.status(200).json(reportesFormateados);
     } else {
       res.status(204).json(reportes);
-      return res.status(200).json(reportes);
     }
   } catch (error) {
     console.error('Error al obtener reportes pendientes:', error);
@@ -732,7 +731,7 @@ const getByIdUsuario = async (req, res) => {
         {
           model: Localidad,
           attributes: ['localidad'],
-          where:{},
+          where: {},
           include:
             [{
               model: Estado,
@@ -747,13 +746,13 @@ const getByIdUsuario = async (req, res) => {
                   where: wherePais,
                   include: [
                     {
-                      model: Pais_Region,    
-                      attributes: [],    
+                      model: Pais_Region,
+                      attributes: [],
                       include: [
                         {
-                          model: Region,      
-                          attributes: ['region'], 
-                          where:whereRegion,
+                          model: Region,
+                          attributes: ['region'],
+                          where: whereRegion,
                         }
                       ]
                     }

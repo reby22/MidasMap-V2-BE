@@ -3,8 +3,7 @@
     "username": "root",
     "database": "midasmap",
     "host": "127.0.0.1",
-    "dialect": "mysql",
-    "password": "Mohacku1rl!"
+    "dialect": "mysql"
   },
   "test": {
     "username": "root",
