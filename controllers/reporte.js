@@ -341,7 +341,7 @@ const getAllReportsPendientes = async (req, res) => {
       }));
       res.status(200).json(reportesFormateados);
     } else {
-      res.status(204).json(reportes);
+      res.status(204).json([]);
     }
   } catch (error) {
     console.error('Error al obtener reportes pendientes:', error);
@@ -504,7 +504,7 @@ const getAllReportsAceptados = async (req, res) => {
       }));
       res.status(200).json(reportesFormateados);
     } else {
-      res.status(204).json(reportes);
+      res.status(204).json([]);
     }
   } catch (error) {
     console.error('Error al obtener reportes pendientes:', error);
@@ -669,7 +669,7 @@ const getAllReportsinMap = async (req, res) => {
       }));
       res.status(200).json(reportesFormateados);
     } else {
-      res.status(204).json(reportes);
+      res.status(204).json([]);
     }
   } catch (error) {
     console.error('Error al obtener reportes pendientes:', error);
@@ -838,7 +838,7 @@ const getByIdUsuario = async (req, res) => {
       }));
       res.status(200).json(reportesFormateados);
     } else {
-      res.status(204).json(reportes);
+      res.status(204).json([]);
     }
   } catch (error) {
     console.error('Error al obtener reportes pendientes:', error);
