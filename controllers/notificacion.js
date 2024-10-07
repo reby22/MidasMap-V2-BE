@@ -124,7 +124,8 @@ const getById = async (req, res) => {
 
 const getAll = async (req, res) => {
   try {
-
+    const { page = 1, limit = 10 } = req.query;
+    const offset = (page - 1) * limit;
     let typeCondition = {};
     let riskCondition = {};
     const searchTerm = (req.query.termino || '').toLowerCase();
@@ -164,7 +165,7 @@ const getAll = async (req, res) => {
       whereCondition.fecha_fin = { [Sequelize.Op.lte]: searchEndingDate };
     }
 
-    const notificacions = await Notificacion.findAll({
+    const notificacions = await Notificacion.findAndCountAll({
       where: whereCondition,
       include: [
         { model: Usuario, attributes: ['id_usuario'] },
@@ -178,6 +179,8 @@ const getAll = async (req, res) => {
 
         }
       ],
+      limit: parseInt(limit),
+      offset: parseInt(offset),
       attributes: [
         'id_notificacion',
         'fecha_inicio',
@@ -187,7 +190,7 @@ const getAll = async (req, res) => {
       ],
     });
 
-    const notificacionsFormateados = notificacions.map(notificacion => ({
+    const notificacionsFormateados = notificacions.rows.map(notificacion => ({
       id_notificacion: notificacion.id_notificacion,
       fecha_inicio: notificacion.fecha_inicio,
       fecha_fin: notificacion.fecha_fin,
@@ -197,7 +200,12 @@ const getAll = async (req, res) => {
       tipo: notificacion.Tipo_Notificacion ? notificacion.Tipo_Notificacion.tipo : null,
       riesgo: notificacion.Riesgo ? notificacion.Riesgo.riesgo : null,
     }));
-    res.status(200).json(notificacionsFormateados);
+    res.status(200).json({
+      totalItems: notificacions.count,
+      totalPages: Math.ceil(notificacions.count / limit),
+      currentPage: parseInt(page),
+      notificaciones: notificacionsFormateados
+    });
   } catch (error) {
     console.error('Error al obtener notificacions:', error);
     res.status(500).json({ error: 'Error interno del servidor' });

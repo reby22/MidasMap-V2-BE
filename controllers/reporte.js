@@ -2,6 +2,19 @@ const { Reporte, Agente_Causal, Ruta_Transmision, Estado, Localidad, Pais, Tipo_
 const Sequelize = require('sequelize');
 const { Op } = require('sequelize');
 
+/*
+NOTAS DE LA PAGINACIÓN: 
+page: numero de la pagina solicitada
+limit: cantidad de reportes por página (por defecto 10).
+offset: se calcula multiplicando (page - 1) * limit.
+_______________________________
+RESPUESTAS
+totalItems: número total de reportes encontrados.
+totalPages: número total de páginas según el límite de resultados.
+currentPage: número de página actual.
+reportes: la lista de reportes para esa página.
+*/
+
 const create = async (req, res) => {
   try {
     const fecha_registro = new Date();
@@ -188,7 +201,8 @@ const update = async (req, res) => {
 
 const getAllReportsPendientes = async (req, res) => {
   try {
-    const { region, estado, pais, titulo, ruta_transmision, tipo, grupo_riesgo, agente_causal } = req.query;
+    const { page = 1, limit = 10, region, estado, pais, titulo, ruta_transmision, tipo, grupo_riesgo, agente_causal } = req.query;
+    const offset = (page - 1) * limit;
     const searchTermLowerCase = (titulo || '').toLowerCase(); // Convertir el término de búsqueda a minúsculas
 
     const whereEstado = {};    // Filtro para Estado
@@ -221,7 +235,7 @@ const getAllReportsPendientes = async (req, res) => {
       whereRuta.id_ruta_transmision = ruta_transmision;
     }
 
-    const reportes = await Reporte.findAll({
+    const reportes = await Reporte.findAndCountAll({
       order: [['fecha_registro', 'DESC']],
       where: {
         [Sequelize.Op.or]: [
@@ -242,9 +256,7 @@ const getAllReportsPendientes = async (req, res) => {
             [{
               model: Estado,
               attributes: ['estado'],
-              where:
-                whereEstado
-              ,
+              where: whereEstado,
               include: [
                 {
                   model: Pais,
@@ -297,11 +309,13 @@ const getAllReportsPendientes = async (req, res) => {
           as: 'MedidaDpe',
           attributes: ['medida'],
         }
-      ]
+      ],
+      limit: parseInt(limit),  // Establece el límite de resultados por página
+      offset: parseInt(offset), // Establece el desplazamiento
     });
 
-    if (reportes.length > 0) {
-      const reportesFormateados = reportes.map(reporte => ({
+    if (reportes.rows.length > 0) {
+      const reportesFormateados = reportes.rows.map(reporte => ({
         id_reporte: reporte.id_reporte,
         usuario: reporte.Usuario?.id_usuario || null,
         titulo: reporte.titulo,
@@ -339,7 +353,12 @@ const getAllReportsPendientes = async (req, res) => {
         estado_reporte: reporte.estado_reporte
 
       }));
-      res.status(200).json(reportesFormateados);
+      res.status(200).json({
+        totalItems: reportes.count,
+        totalPages: Math.ceil(reportes.count / limit),
+        currentPage: parseInt(page),
+        reportes: reportesFormateados
+      });
     } else {
       res.status(204).json([]);
     }
@@ -351,7 +370,8 @@ const getAllReportsPendientes = async (req, res) => {
 
 const getAllReportsAceptados = async (req, res) => {
   try {
-    const { region, estado, pais, titulo, ruta_transmision, tipo, grupo_riesgo, agente_causal } = req.query;
+    const { page = 1, limit = 10, region, estado, pais, titulo, ruta_transmision, tipo, grupo_riesgo, agente_causal } = req.query;
+    const offset = (page - 1) * limit;
     const searchTermLowerCase = (titulo || '').toLowerCase(); // Convertir el término de búsqueda a minúsculas
 
     const whereEstado = {};    // Filtro para Estado
@@ -384,7 +404,7 @@ const getAllReportsAceptados = async (req, res) => {
       whereRuta.id_ruta_transmision = ruta_transmision;
     }
 
-    const reportes = await Reporte.findAll({
+    const reportes = await Reporte.findAndCountAll({
       order: [['fecha_registro', 'DESC']],
       where: {
         [Sequelize.Op.or]: [
@@ -405,9 +425,7 @@ const getAllReportsAceptados = async (req, res) => {
             [{
               model: Estado,
               attributes: ['estado'],
-              where:
-                whereEstado
-              ,
+              where: whereEstado,
               include: [
                 {
                   model: Pais,
@@ -460,11 +478,13 @@ const getAllReportsAceptados = async (req, res) => {
           as: 'MedidaDpe',
           attributes: ['medida'],
         }
-      ]
+      ],
+      limit: parseInt(limit),  // Establece el límite de resultados por página
+      offset: parseInt(offset), // Establece el desplazamiento
     });
 
-    if (reportes.length > 0) {
-      const reportesFormateados = reportes.map(reporte => ({
+    if (reportes.rows.length > 0) {
+      const reportesFormateados = reportes.rows.map(reporte => ({
         id_reporte: reporte.id_reporte,
         usuario: reporte.Usuario?.id_usuario || null,
         titulo: reporte.titulo,
@@ -502,7 +522,12 @@ const getAllReportsAceptados = async (req, res) => {
         estado_reporte: reporte.estado_reporte
 
       }));
-      res.status(200).json(reportesFormateados);
+      res.status(200).json({
+        totalItems: reportes.count,
+        totalPages: Math.ceil(reportes.count / limit),
+        currentPage: parseInt(page),
+        reportes: reportesFormateados
+      });
     } else {
       res.status(204).json([]);
     }

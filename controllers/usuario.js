@@ -189,10 +189,10 @@ const login = async (req, res) => {
 
     if (!correo || !contraseña) {
       //validación de que estan todos
-      return  res.status(400).json({
-          msg: "Faltan datos"
+      return res.status(400).json({
+        msg: "Faltan datos"
       });
-  }
+    }
     // Buscar el usuario por correo y obtener los datos relacionados
     const usuario = await Usuario.findOne({
       where: { correo: correo },
@@ -255,16 +255,16 @@ const login = async (req, res) => {
     };
 
     //me regresa la promesa de q me manda un token y se genera
-                generateJWT(usuarioFormateado).then((token) => {
-                    res.status(200).json({
-                        msg: "Authentificación exitosa",
-                        //tokn de respuesta
-                        token, usuarioFormateado
-                    });
-                }).catch((error) => {
-                  console.error('Error al autenticar:', error);
-                  res.status(500).json({ message: 'Error en el servidor.' });
-                })
+    generateJWT(usuarioFormateado).then((token) => {
+      res.status(200).json({
+        msg: "Authentificación exitosa",
+        //tokn de respuesta
+        token, usuarioFormateado
+      });
+    }).catch((error) => {
+      console.error('Error al autenticar:', error);
+      res.status(500).json({ message: 'Error en el servidor.' });
+    })
     //res.status(200).json(usuarioFormateado);
   } catch (error) {
     console.error('Error al realizar el inicio de sesión:', error);
@@ -273,7 +273,10 @@ const login = async (req, res) => {
 };
 
 const getAll = async (req, res) => {
-  Usuario.findAll({
+  const { page = 1, limit = 10 } = req.query;
+  const offset = (page - 1) * limit;
+
+  Usuario.findAndCountAll({
     order: [['fecha_registro', 'DESC']],
     include: [
       { model: Titulo, attributes: ['titulo'] },
@@ -281,6 +284,8 @@ const getAll = async (req, res) => {
       { model: Grado, attributes: ['grado'] },
       { model: Rol, attributes: ['rol'] },
     ],
+    limit: parseInt(limit),
+    offset: parseInt(offset),
     attributes: [
       'id_usuario',
       'nombre',
@@ -300,7 +305,7 @@ const getAll = async (req, res) => {
     ]
   }).then(usuarios => {
     // Procesar los usuarios obtenidos aquí
-    const usuariosFormateados = usuarios.map(usuario => ({
+    const usuariosFormateados = usuarios.rows.map(usuario => ({
       id_usuario: usuario.id_usuario,
       nombre: usuario.nombre,
       ap_paterno: usuario.ap_paterno,
@@ -321,7 +326,12 @@ const getAll = async (req, res) => {
       fecha_registro: usuario.fecha_registro,
       id_rol: usuario.Rol ? usuario.Rol.rol : null,
     }));
-    res.status(200).json(usuariosFormateados);
+    res.status(200).json({
+      totalItems: usuarios.count,
+      totalPages: Math.ceil(usuarios.count / limit),
+      currentPage: parseInt(page),
+      usuarios: usuariosFormateados
+    });
     // Aquí puedes enviar usuariosFormateados a donde lo necesites
   }).catch(error => {
     console.error('Error al obtener usuarios:', error);
@@ -329,7 +339,10 @@ const getAll = async (req, res) => {
 };
 
 const getAllUsersPendientes = async (req, res) => {
-  Usuario.findAll({
+  const { page = 1, limit = 10 } = req.query;
+  const offset = (page - 1) * limit;
+
+  Usuario.findAndCountAll({
     order: [['fecha_registro', 'DESC']],
     include: [
       { model: Titulo, attributes: ['titulo'] },
@@ -340,6 +353,8 @@ const getAllUsersPendientes = async (req, res) => {
         where: { rol: 'Pendiente' }
       },
     ],
+    limit: parseInt(limit),
+    offset: parseInt(offset),
     attributes: [
       'id_usuario',
       'nombre',
@@ -359,7 +374,7 @@ const getAllUsersPendientes = async (req, res) => {
     ]
   }).then(usuarios => {
     // Procesar los usuarios obtenidos aquí
-    const usuariosFormateados = usuarios.map(usuario => ({
+    const usuariosFormateados = usuarios.rows.map(usuario => ({
       id_usuario: usuario.id_usuario,
       nombre: usuario.nombre,
       ap_paterno: usuario.ap_paterno,
@@ -381,15 +396,22 @@ const getAllUsersPendientes = async (req, res) => {
       id_rol: usuario.Rol ? usuario.Rol.rol : null,
 
     }));
-    res.status(200).json(usuariosFormateados);
-    // Aquí puedes enviar usuariosFormateados a donde lo necesites
+    res.status(200).json({
+      totalItems: usuarios.count,
+      totalPages: Math.ceil(usuarios.count / limit),
+      currentPage: parseInt(page),
+      usuarios: usuariosFormateados
+    });
   }).catch(error => {
     console.error('Error al obtener usuarios:', error);
   });
 };
 
 const getAllUsersAceptados = async (req, res) => {
-  Usuario.findAll({
+  const { page = 1, limit = 10 } = req.query;
+  const offset = (page - 1) * limit;
+
+  Usuario.findAndCountAll({
     order: [['fecha_registro', 'DESC']],
     include: [
       { model: Titulo, attributes: ['titulo'] },
@@ -400,6 +422,8 @@ const getAllUsersAceptados = async (req, res) => {
         where: { rol: ['Administrador', 'Colaborador'] }
       },
     ],
+    limit: parseInt(limit),
+    offset: parseInt(offset),
     attributes: [
       'id_usuario',
       'nombre',
@@ -419,7 +443,7 @@ const getAllUsersAceptados = async (req, res) => {
     ]
   }).then(usuarios => {
     // Procesar los usuarios obtenidos aquí
-    const usuariosFormateados = usuarios.map(usuario => ({
+    const usuariosFormateados = usuarios.rows.map(usuario => ({
       id_usuario: usuario.id_usuario,
       nombre: usuario.nombre,
       ap_paterno: usuario.ap_paterno,
@@ -441,8 +465,12 @@ const getAllUsersAceptados = async (req, res) => {
       id_rol: usuario.Rol ? usuario.Rol.rol : null,
 
     }));
-    res.status(200).json(usuariosFormateados);
-    // Aquí puedes enviar usuariosFormateados a donde lo necesites
+    res.status(200).json({
+      totalItems: usuarios.count,
+      totalPages: Math.ceil(usuarios.count / limit),
+      currentPage: parseInt(page),
+      usuarios: usuariosFormateados
+    });
   }).catch(error => {
     console.error('Error al obtener usuarios:', error);
   });
@@ -450,6 +478,8 @@ const getAllUsersAceptados = async (req, res) => {
 
 const searchByTerm = async (req, res) => {
   try {
+    const { page = 1, limit = 10 } = req.query;
+    const offset = (page - 1) * limit;
 
     const searchTerm = req.query.nombre || ''; // Obtener el término de búsqueda del query params
     console.log(searchTerm);
@@ -457,7 +487,7 @@ const searchByTerm = async (req, res) => {
     const searchTermUpperCase = searchTerm.toUpperCase(); // Convertir el término de búsqueda a mayúsculas
 
     // Buscar todos los usuarios que coincidan con el nombre proporcionado (insensible a mayúsculas y minúsculas)
-    const usuarios = await Usuario.findAll({
+    const usuarios = await Usuario.findAndCountAll({
       order: [['fecha_registro', 'DESC']],
       where: {
         // Utilizar operadores `Op.or` para buscar en ambos casos de mayúsculas y minúsculas
@@ -503,6 +533,8 @@ const searchByTerm = async (req, res) => {
         { model: Grado, attributes: ['grado'] },
         { model: Rol, attributes: ['rol'] },
       ],
+      limit: parseInt(limit),
+      offset: parseInt(offset),
       attributes: [
         'id_usuario',
         'nombre',
@@ -523,7 +555,7 @@ const searchByTerm = async (req, res) => {
     });
 
     // Procesar los usuarios obtenidos
-    const usuariosFormateados = usuarios.map(usuario => ({
+    const usuariosFormateados = usuarios.rows.map(usuario => ({
       id_usuario: usuario.id_usuario,
       nombre: usuario.nombre,
       ap_paterno: usuario.ap_paterno,
@@ -545,7 +577,12 @@ const searchByTerm = async (req, res) => {
       id_rol: usuario.Rol ? usuario.Rol.rol : null,
     }));
 
-    res.status(200).json(usuariosFormateados);
+    res.status(200).json({
+      totalItems: usuarios.count,
+      totalPages: Math.ceil(usuarios.count / limit),
+      currentPage: parseInt(page),
+      usuarios: usuariosFormateados
+    });
   } catch (error) {
     console.error('Error al obtener usuarios:', error);
     res.status(500).json({ error: 'Error interno del servidor' });
@@ -553,8 +590,10 @@ const searchByTerm = async (req, res) => {
 };
 
 const getAllUsersByRol = async (req, res) => {
+  const { page = 1, limit = 10 } = req.query;
+  const offset = (page - 1) * limit;
   const { rol } = req.query;
-  Usuario.findAll({
+  Usuario.findAndCountAll({
     order: [['fecha_registro', 'DESC']],
     include: [
       { model: Titulo, attributes: ['titulo'] },
@@ -562,6 +601,8 @@ const getAllUsersByRol = async (req, res) => {
       { model: Grado, attributes: ['grado'] },
       { model: Rol, where: { rol: rol }, attributes: ['rol'] },
     ],
+    limit: parseInt(limit),
+    offset: parseInt(offset),
     attributes: [
       'id_usuario',
       'nombre',
@@ -581,7 +622,7 @@ const getAllUsersByRol = async (req, res) => {
     ]
   }).then(usuarios => {
     // Procesar los usuarios obtenidos aquí
-    const usuariosFormateados = usuarios.map(usuario => ({
+    const usuariosFormateados = usuarios.rows.map(usuario => ({
       id_usuario: usuario.id_usuario,
       nombre: usuario.nombre,
       ap_paterno: usuario.ap_paterno,
@@ -603,15 +644,16 @@ const getAllUsersByRol = async (req, res) => {
       id_rol: usuario.Rol ? usuario.Rol.rol : null,
 
     }));
-    res.status(200).json(usuariosFormateados);
-    // Aquí puedes enviar usuariosFormateados a donde lo necesites
+    res.status(200).json({
+      totalItems: usuarios.count,
+      totalPages: Math.ceil(usuarios.count / limit),
+      currentPage: parseInt(page),
+      usuarios: usuariosFormateados
+    });
   }).catch(error => {
     console.error('Error al obtener usuarios:', error);
   });
 };
-
-
-
 
 
 module.exports = {
