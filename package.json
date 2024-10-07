@@ -27,6 +27,7 @@
     "express-handlebars": "^7.1.2",
     "express-session": "^1.18.0",
     "faker": "^5.5.3",
+    "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "mysql2": "^3.9.2",
     "passport": "^0.7.0",

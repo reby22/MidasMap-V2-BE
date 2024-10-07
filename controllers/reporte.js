@@ -507,8 +507,8 @@ const getAllReportsAceptados = async (req, res) => {
       res.status(204).json([]);
     }
   } catch (error) {
-    console.error('Error al obtener reportes pendientes:', error);
-    res.status(500).json({ error: 'Error al obtener los reportes pendientes.' });
+    console.error('Error al obtener reportes aceptados:', error);
+    res.status(500).json({ error: 'Error al obtener los reportes aceptados.' });
   }
 };
 

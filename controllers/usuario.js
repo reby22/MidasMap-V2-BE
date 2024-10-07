@@ -1,6 +1,6 @@
 const { Usuario, Titulo, Grado, Licenciatura, Rol } = require('../models/associations');
 const Sequelize = require('sequelize');
-
+const { generateJWT } = require("../helpers/jwt");
 
 const create = async (req, res) => {
   try {
@@ -187,6 +187,12 @@ const login = async (req, res) => {
   try {
     const { correo, contraseña } = req.body;
 
+    if (!correo || !contraseña) {
+      //validación de que estan todos
+      return  res.status(400).json({
+          msg: "Faltan datos"
+      });
+  }
     // Buscar el usuario por correo y obtener los datos relacionados
     const usuario = await Usuario.findOne({
       where: { correo: correo },
@@ -248,7 +254,18 @@ const login = async (req, res) => {
       id_rol: usuario.Rol ? usuario.Rol.rol : null,
     };
 
-    res.status(200).json(usuarioFormateado);
+    //me regresa la promesa de q me manda un token y se genera
+                generateJWT(usuarioFormateado).then((token) => {
+                    res.status(200).json({
+                        msg: "Authentificación exitosa",
+                        //tokn de respuesta
+                        token, usuarioFormateado
+                    });
+                }).catch((error) => {
+                  console.error('Error al autenticar:', error);
+                  res.status(500).json({ message: 'Error en el servidor.' });
+                })
+    //res.status(200).json(usuarioFormateado);
   } catch (error) {
     console.error('Error al realizar el inicio de sesión:', error);
     res.status(500).json({ error: 'Error interno del servidor' });
