@@ -16,7 +16,7 @@ module.exports = {
     // Fecha 4 meses en el futuro
     const fechaFut4 = new Date(fechaActual.getFullYear(), fechaActual.getMonth() + 4, 0);
 
-    for (let i = 1; i <= 10; i++) {
+    for (let i = 1; i <= 30; i++) {
       data.push({
         id_notificacion: i,
         id_tipo: Math.floor(Math.random() * 5) + 1,

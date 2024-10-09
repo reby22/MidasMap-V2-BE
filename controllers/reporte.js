@@ -354,8 +354,8 @@ const getAllReportsPendientes = async (req, res) => {
 
       }));
       res.status(200).json({
-        totalItems: reportes.count,
-        totalPages: Math.ceil(reportes.count / limit),
+        totalItems: reportes.count/5,
+        totalPages: Math.ceil(reportes.count / (5*limit)),
         currentPage: parseInt(page),
         reportes: reportesFormateados
       });
@@ -523,8 +523,8 @@ const getAllReportsAceptados = async (req, res) => {
 
       }));
       res.status(200).json({
-        totalItems: reportes.count,
-        totalPages: Math.ceil(reportes.count / limit),
+        totalItems: reportes.count/5,
+        totalPages: Math.ceil(reportes.count / (5*limit)),
         currentPage: parseInt(page),
         reportes: reportesFormateados
       });
