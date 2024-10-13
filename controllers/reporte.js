@@ -705,7 +705,8 @@ const getAllReportsinMap = async (req, res) => {
 const getByIdUsuario = async (req, res) => {
   const { id } = req.params;
   try {
-    const { region, estado, pais, titulo, ruta_transmision, tipo, grupo_riesgo, agente_causal } = req.query;
+    const {page = 1, limit = 10, region, estado, pais, titulo, ruta_transmision, tipo, grupo_riesgo, agente_causal } = req.query;
+    const offset = (page - 1) * limit;
     const searchTermLowerCase = (titulo || '').toLowerCase(); // Convertir el término de búsqueda a minúsculas
 
     const whereEstado = {};    // Filtro para Estado
@@ -740,7 +741,7 @@ const getByIdUsuario = async (req, res) => {
       whereRuta.id_ruta_transmision = ruta_transmision;
     }
 
-    const reportes = await Reporte.findAll({
+    const reportes = await Reporte.findAndCountAll({
       order: [['fecha_registro', 'DESC']],
       where: {
         [Sequelize.Op.or]: [
@@ -819,11 +820,13 @@ const getByIdUsuario = async (req, res) => {
           as: 'MedidaDpe',
           attributes: ['medida'],
         }
-      ]
+      ],
+      limit: parseInt(limit),  
+      offset: parseInt(offset),
     });
 
-    if (reportes.length > 0) {
-      const reportesFormateados = reportes.map(reporte => ({
+    if (reportes.rows.length > 0) {
+      const reportesFormateados = reportes.rows.map(reporte => ({
         id_reporte: reporte.id_reporte,
         usuario: reporte.Usuario?.id_usuario || null,
         titulo: reporte.titulo,
@@ -861,7 +864,12 @@ const getByIdUsuario = async (req, res) => {
         estado_reporte: reporte.estado_reporte
 
       }));
-      res.status(200).json(reportesFormateados);
+      res.status(200).json({
+        totalItems: reportes.count/5,
+        totalPages: Math.ceil(reportes.count / (5*limit)),
+        currentPage: parseInt(page),
+        reportes: reportesFormateados
+      });
     } else {
       res.status(204).json([]);
     }
