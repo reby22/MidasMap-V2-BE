@@ -1,12 +1,18 @@
 'use strict';
 const faker = require('faker');
+const bcrypt = require('bcrypt');
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
     const data = [];
+    const saltRounds = 10;
+    const contraseñaAdmin = '12345678'; // Convertir a string
+    let contraseña = "";
 
     for (let i = 3; i <= 21; i++) {
+      contraseña = await bcrypt.hash(faker.internet.password(), saltRounds);
+
       data.push({
         id_usuario: i,
         nombre: faker.name.firstName(),
@@ -16,7 +22,7 @@ module.exports = {
         telefono_fijo: faker.phone.phoneNumberFormat(),
         telefono_celular: faker.phone.phoneNumberFormat(),
         correo: faker.internet.email(),
-        contraseña: faker.internet.password(),
+        contraseña: contraseña,
         especialidad: faker.company.bsNoun(),
         sub_especialidad: faker.company.bsBuzz(),
         ultima_cedula_dgp:Math.floor(Math.random() * 9000000000) + 1000000000,
@@ -31,6 +37,8 @@ module.exports = {
     }
 
     for (let i = 22; i <= 31; i++) {
+      contraseña = await bcrypt.hash(faker.internet.password(), saltRounds);
+
       data.push({
         id_usuario: i,
         nombre: faker.name.firstName(),
@@ -40,7 +48,7 @@ module.exports = {
         telefono_celular: faker.phone.phoneNumberFormat(),
         foto_perfil:null,
         correo: faker.internet.email(),
-        contraseña: faker.internet.password(),
+        contraseña: contraseña,
         especialidad: faker.company.bsNoun(),
         sub_especialidad: faker.company.bsBuzz(),
         ultima_cedula_dgp:Math.floor(Math.random() * 9000000000) + 1000000000,
@@ -54,6 +62,8 @@ module.exports = {
       });
     }
 
+    // Convertir contraseñaAdmin a string antes de encriptar
+    contraseña = await bcrypt.hash(contraseñaAdmin.toString(), saltRounds);
     data.push({
       id_usuario: 2,
       nombre: 'Juan Antonio',
@@ -63,7 +73,7 @@ module.exports = {
       telefono_celular: faker.phone.phoneNumberFormat(),
       foto_perfil:null,
       correo: 'colaborador@colaborador.com',
-      contraseña: 12345678,
+      contraseña: contraseña,
       especialidad: 'Medicina Interna',
       sub_especialidad: 'Cardiología',
       ultima_cedula_dgp:Math.floor(Math.random() * 9000000000) + 1000000000,
@@ -84,7 +94,7 @@ module.exports = {
       telefono_fijo: faker.phone.phoneNumberFormat(),
       telefono_celular: faker.phone.phoneNumberFormat(),
       correo: 'admin@admin.com',
-      contraseña: 12345678,
+      contraseña: contraseña,
       especialidad: 'Biomedicina',
       sub_especialidad: 'Genómica Viral y Epidemiología Molecular',
       ultima_cedula_dgp:Math.floor(Math.random() * 9000000000) + 1000000000,

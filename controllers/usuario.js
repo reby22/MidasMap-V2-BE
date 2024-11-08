@@ -1,5 +1,6 @@
 const { Usuario, Titulo, Grado, Licenciatura, Rol } = require('../models/associations');
 const Sequelize = require('sequelize');
+const bcrypt = require('bcrypt');
 const { generateJWT } = require("../helpers/jwt");
 
 const create = async (req, res) => {
@@ -31,13 +32,18 @@ const create = async (req, res) => {
       return;
     }
 
+    // Encriptar la contraseña
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(contraseña, saltRounds);
+
+
     // Crear el usuario en la base de datos
     const nuevoUsuario = await Usuario.create({
       nombre,
       ap_paterno,
       ap_materno,
       correo,
-      contraseña,
+      contraseña: hashedPassword,
       telefono_fijo,
       telefono_celular,
       foto_perfil,
@@ -62,6 +68,50 @@ const create = async (req, res) => {
   }
 };
 
+const changePassword = async (req, res) => {
+  try {
+    const { id_usuario, contraseña_actual, nueva_contraseña } = req.body;
+    console.log(req.body);
+    // Validación de datos
+    if (!id_usuario || !contraseña_actual || !nueva_contraseña) {
+      return res.status(400).json({ msg: 'Faltan datos' });
+    }
+
+    // Buscar al usuario en la base de datos
+    const usuario = await Usuario.findOne({
+      where: { id_usuario },
+      attributes: ['id_usuario', 'contraseña'],
+    });
+
+    // Verificar si el usuario existe
+    if (!usuario) {
+      return res.status(404).json({ error: 'El usuario no existe' });
+    }
+
+    // Verificar si la contraseña actual es correcta
+    const esContraseñaCorrecta = await bcrypt.compare(contraseña_actual, usuario.contraseña);
+    if (!esContraseñaCorrecta) {
+      return res.status(401).json({ error: 'La contraseña actual es incorrecta' });
+    }
+
+    // Encriptar la nueva contraseña
+    const saltRounds = 10;
+    const hashednueva_contraseña = await bcrypt.hash(nueva_contraseña, saltRounds);
+
+    // Actualizar la contraseña en la base de datos
+    await Usuario.update(
+      { contraseña: hashednueva_contraseña },
+      { where: { id_usuario } }
+    );
+
+    res.status(200).json({ msg: 'Contraseña actualizada con éxito' });
+  } catch (error) {
+    console.error('Error al cambiar la contraseña:', error);
+    res.status(500).json({ error: 'Error al cambiar la contraseña' });
+  }
+};
+
+
 
 const update = async (req, res) => {
   try {
@@ -83,7 +133,6 @@ const update = async (req, res) => {
     if (req.body.ap_paterno) updateData.ap_paterno = req.body.ap_paterno;
     if (req.body.ap_materno) updateData.ap_materno = req.body.ap_materno;
     if (req.body.correo) updateData.correo = req.body.correo;
-    if (req.body.contraseña) updateData.contraseña = req.body.contraseña;
     if (req.body.telefono_fijo) updateData.telefono_fijo = req.body.telefono_fijo;
     if (req.body.telefono_celular) updateData.telefono_celular = req.body.telefono_celular;
     if (req.body.foto_perfil) updateData.foto_perfil = req.body.foto_perfil;
@@ -163,7 +212,6 @@ const getById = async (req, res) => {
       telefono_celular: usuario.telefono_celular,
       foto_perfil: usuario.foto_perfil,
       correo: usuario.correo,
-      contraseña: usuario.contraseña,
       titulo: usuario.Titulo ? usuario.Titulo.titulo : null,
       licenciatura: usuario.Licenciatura ? usuario.Licenciatura.licenciatura : null,
       especialidad: usuario.especialidad,
@@ -227,7 +275,8 @@ const login = async (req, res) => {
     }
 
     // Verificar si la contraseña es correcta
-    if (contraseña !== usuario.contraseña) {
+    const validPassword = await bcrypt.compare(contraseña, usuario.contraseña);
+    if (!validPassword) {
       return res.status(401).json({ error: 'La contraseña es incorrecta' });
     }
 
@@ -241,7 +290,6 @@ const login = async (req, res) => {
       telefono_celular: usuario.telefono_celular,
       foto_perfil: usuario.foto_perfil,
       correo: usuario.correo,
-      contraseña: usuario.contraseña,
       titulo: usuario.Titulo ? usuario.Titulo.titulo : null,
       licenciatura: usuario.Licenciatura ? usuario.Licenciatura.licenciatura : null,
       especialidad: usuario.especialidad,
@@ -314,7 +362,6 @@ const getAll = async (req, res) => {
       telefono_celular: usuario.telefono_celular,
       foto_perfil: usuario.foto_perfil,
       correo: usuario.correo,
-      contraseña: usuario.contraseña,
       titulo: usuario.Titulo ? usuario.Titulo.titulo : null,
       licenciatura: usuario.Licenciatura ? usuario.Licenciatura.licenciatura : null,
       especialidad: usuario.especialidad,
@@ -339,8 +386,11 @@ const getAll = async (req, res) => {
 };
 
 const getAllUsersPendientes = async (req, res) => {
-  const { page = 1, limit = 10 } = req.query;
+  const { page = 1, limit = 10 , nombre} = req.query;
   const offset = (page - 1) * limit;
+
+  console.log(nombre);
+  const searchTermLowerCase = (nombre || '').toLowerCase();
 
   Usuario.findAndCountAll({
     order: [['fecha_registro', 'DESC']],
@@ -350,7 +400,26 @@ const getAllUsersPendientes = async (req, res) => {
       { model: Grado, attributes: ['grado'] },
       {
         model: Rol, attributes: ['rol'],
-        where: { rol: 'Pendiente' }
+        where: {
+          [Sequelize.Op.or]: [
+            Sequelize.where(
+              Sequelize.fn('LOWER', Sequelize.col('Usuario.nombre')),
+              'LIKE',
+              `%${searchTermLowerCase}%`
+            ),
+            Sequelize.where(
+              Sequelize.fn('LOWER', Sequelize.col('Usuario.ap_materno')),
+              'LIKE',
+              `%${searchTermLowerCase}%`
+            ),
+            Sequelize.where(
+              Sequelize.fn('LOWER', Sequelize.col('Usuario.ap_paterno')),
+              'LIKE',
+              `%${searchTermLowerCase}%`
+            ),
+          ],
+          rol: 'Pendiente'
+        }
       },
     ],
     limit: parseInt(limit),
@@ -383,7 +452,6 @@ const getAllUsersPendientes = async (req, res) => {
       telefono_celular: usuario.telefono_celular,
       foto_perfil: usuario.foto_perfil,
       correo: usuario.correo,
-      contraseña: usuario.contraseña,
       titulo: usuario.Titulo ? usuario.Titulo.titulo : null,
       licenciatura: usuario.Licenciatura ? usuario.Licenciatura.licenciatura : null,
       especialidad: usuario.especialidad,
@@ -411,6 +479,10 @@ const getAllUsersAceptados = async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
   const offset = (page - 1) * limit;
 
+  const searchTerm = req.query.nombre || ''; 
+  console.log(searchTerm);
+  const searchTermLowerCase = searchTerm.toLowerCase(); 
+
   Usuario.findAndCountAll({
     order: [['fecha_registro', 'DESC']],
     include: [
@@ -419,7 +491,24 @@ const getAllUsersAceptados = async (req, res) => {
       { model: Grado, attributes: ['grado'] },
       {
         model: Rol, attributes: ['rol'],
-        where: { rol: ['Administrador', 'Colaborador'] }
+        where: { [Sequelize.Op.or]: [
+          Sequelize.where(
+            Sequelize.fn('LOWER', Sequelize.col('Usuario.nombre')),
+            'LIKE',
+            `%${searchTermLowerCase}%`
+          ),
+          Sequelize.where(
+            Sequelize.fn('LOWER', Sequelize.col('Usuario.ap_materno')),
+            'LIKE',
+            `%${searchTermLowerCase}%`
+          ),
+          Sequelize.where(
+            Sequelize.fn('LOWER', Sequelize.col('Usuario.ap_paterno')),
+            'LIKE',
+            `%${searchTermLowerCase}%`
+          )
+        ],
+        rol: ['Administrador', 'Colaborador'] }
       },
     ],
     limit: parseInt(limit),
@@ -452,7 +541,6 @@ const getAllUsersAceptados = async (req, res) => {
       telefono_celular: usuario.telefono_celular,
       foto_perfil: usuario.foto_perfil,
       correo: usuario.correo,
-      contraseña: usuario.contraseña,
       titulo: usuario.Titulo ? usuario.Titulo.titulo : null,
       licenciatura: usuario.Licenciatura ? usuario.Licenciatura.licenciatura : null,
       especialidad: usuario.especialidad,
@@ -484,7 +572,6 @@ const searchByTerm = async (req, res) => {
     const searchTerm = req.query.nombre || ''; // Obtener el término de búsqueda del query params
     console.log(searchTerm);
     const searchTermLowerCase = searchTerm.toLowerCase(); // Convertir el término de búsqueda a minúsculas
-    const searchTermUpperCase = searchTerm.toUpperCase(); // Convertir el término de búsqueda a mayúsculas
 
     // Buscar todos los usuarios que coincidan con el nombre proporcionado (insensible a mayúsculas y minúsculas)
     const usuarios = await Usuario.findAndCountAll({
@@ -506,25 +593,7 @@ const searchByTerm = async (req, res) => {
             Sequelize.fn('LOWER', Sequelize.col('Usuario.ap_paterno')),
             'LIKE',
             `%${searchTermLowerCase}%`
-          ),
-          Sequelize.where(
-            Sequelize.fn('UPPER', Sequelize.col('Usuario.nombre')),
-
-            'LIKE',
-            `%${searchTermUpperCase}%`
-          ),
-          Sequelize.where(
-            Sequelize.fn('UPPER', Sequelize.col('Usuario.ap_materno')),
-
-            'LIKE',
-            `%${searchTermUpperCase}%`
-          ),
-          Sequelize.where(
-            Sequelize.fn('UPPER', Sequelize.col('Usuario.ap_paterno')),
-
-            'LIKE',
-            `%${searchTermUpperCase}%`
-          ),
+          )
         ],
       },
       include: [
@@ -564,7 +633,6 @@ const searchByTerm = async (req, res) => {
       telefono_celular: usuario.telefono_celular,
       foto_perfil: usuario.foto_perfil,
       correo: usuario.correo,
-      contraseña: usuario.contraseña,
       titulo: usuario.Titulo ? usuario.Titulo.titulo : null,
       licenciatura: usuario.Licenciatura ? usuario.Licenciatura.licenciatura : null,
       especialidad: usuario.especialidad,
@@ -631,7 +699,6 @@ const getAllUsersByRol = async (req, res) => {
       telefono_celular: usuario.telefono_celular,
       foto_perfil: usuario.foto_perfil,
       correo: usuario.correo,
-      contraseña: usuario.contraseña,
       titulo: usuario.Titulo ? usuario.Titulo.titulo : null,
       licenciatura: usuario.Licenciatura ? usuario.Licenciatura.licenciatura : null,
       especialidad: usuario.especialidad,
@@ -658,6 +725,7 @@ const getAllUsersByRol = async (req, res) => {
 
 module.exports = {
   create,
+  changePassword,
   getById,
   login,
   getAll,

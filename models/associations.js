@@ -262,7 +262,7 @@ const Usuario = sequelize.define(
       // allowNull defaults to true
     },
     contraseña: {
-      type: DataTypes.STRING(20),
+      type: DataTypes.STRING(80),
       allowNull: false,
       // allowNull defaults to true
     },

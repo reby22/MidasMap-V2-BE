@@ -13,7 +13,7 @@ const create = async (req, res) => {
     }
     // Crear localidad en la base de datos
     const nuevoLocalidad = await Localidad.create({
-      localidad
+      localidadq
     });
 
     // Enviar una respuesta con localidad creada

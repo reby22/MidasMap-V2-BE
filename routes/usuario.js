@@ -1,5 +1,5 @@
 const Router = require("express");
-const { create, getById, getAllUsersPendientes,getAllUsersAceptados, login,getAll,update, destroy,  searchByTerm, getAllUsersByRol} = require("../controllers/usuario");
+const { create, changePassword, getById, getAllUsersPendientes,getAllUsersAceptados, login,getAll,update, destroy,  searchByTerm, getAllUsersByRol} = require("../controllers/usuario");
 const router = Router();
 const { verifyToken, checkRole } = require('../helpers/jwt');
 
@@ -7,6 +7,8 @@ module.exports = router;
 
 // Ruta para crear un nuevo usuario
 router.post('/',verifyToken, checkRole(["Administrador"]), create);
+
+router.put('/cambiocontrasena',verifyToken, checkRole(["Administrador", "Colaborador"]),changePassword);
 
 // Ruta para actualizar un usuario existente
 router.put('/actualizar',verifyToken, checkRole(["Administrador"]),update);

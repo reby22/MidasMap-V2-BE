@@ -5,8 +5,6 @@ const jwt = require("jsonwebtoken");
 // Si el error tiene valor es que hay un error
 const generateJWT = (user) => {
     return new Promise((resolve, reject) => {
-        // const payload = { id };
-        console.log(user);
         const payload = { userId: user.id_usuario, role: user.id_rol };
         jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: "4h" }, (error, token) => {
             if (error) {
