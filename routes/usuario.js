@@ -6,7 +6,7 @@ const { verifyToken, checkRole } = require('../helpers/jwt');
 module.exports = router;
 
 // Ruta para crear un nuevo usuario
-router.post('/',verifyToken, checkRole(["Administrador"]), create);
+router.post('/', create);
 
 router.put('/cambiocontrasena',verifyToken, checkRole(["Administrador", "Colaborador"]),changePassword);
 
