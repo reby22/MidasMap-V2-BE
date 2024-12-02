@@ -2,6 +2,7 @@ const { Usuario, Titulo, Grado, Licenciatura, Rol } = require('../models/associa
 const Sequelize = require('sequelize');
 const bcrypt = require('bcrypt');
 const { generateJWT } = require("../helpers/jwt");
+const { sendConfirmationEmail } = require('./email');
 
 const create = async (req, res) => {
   try {
@@ -126,6 +127,7 @@ const update = async (req, res) => {
       return res.status(404).json({ mensaje: "Usuario no encontrado" });
     }
 
+    const rol_pasado= usuario.rol;
     const updateData = {};
 
     // Verificar si cada campo está presente en el cuerpo de la solicitud y agregarlo al objeto updateData si es así
@@ -147,6 +149,11 @@ const update = async (req, res) => {
     if (req.body.id_rol) updateData.id_rol = req.body.id_rol;
     // Actualizar el usuario con los datos proporcionados en el cuerpo de la solicitud
     await usuario.update(updateData);
+
+    if(rol_pasado=== 3 && usuario.id_rol!==3){
+      await sendConfirmationEmail(usuario.nombre, usuario.ap_paterno, usuario.id_titulo, usuario.correo, usuario.id_rol);
+    }
+
 
     // Enviar una respuesta con el usuario creado
     res.status(201).json({ mensaje: "Usuario actualizado con éxito!", usuario });

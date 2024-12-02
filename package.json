@@ -27,9 +27,11 @@
     "express-handlebars": "^7.1.2",
     "express-session": "^1.18.0",
     "faker": "^5.5.3",
+    "handlebars": "^4.7.8",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "mysql2": "^3.9.2",
+    "nodemailer": "^6.9.16",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
     "sequelize": "^6.37.1"
